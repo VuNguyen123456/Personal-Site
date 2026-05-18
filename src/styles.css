@@ -64,6 +64,8 @@ html[data-palette="espeon"] .spacer-eeveelution-sprite[data-species="espeon"],
 html[data-palette="umbreon"] .spacer-eeveelution-sprite[data-species="umbreon"],
 html[data-palette="sylveon"] .spacer-eeveelution-sprite[data-species="sylveon"] {
   display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .spacer-eeveelution-sprite-img {

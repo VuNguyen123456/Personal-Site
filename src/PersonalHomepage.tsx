@@ -2161,7 +2161,7 @@ export function EmptySpacerSection({ className }: { className: string }) {
               key={species}
               type="button"
               data-species={species}
-              className="spacer-eeveelution-sprite pointer-events-auto z-[2] flex cursor-pointer items-center justify-center border-0 bg-transparent p-0"
+              className="spacer-eeveelution-sprite pointer-events-auto z-[2] cursor-pointer border-0 bg-transparent p-0"
               aria-label={`Show ${spacerSpeciesLabel(species)} details`}
               aria-pressed={activeSpecies === species && isReadoutFullyShown}
               onMouseEnter={() => showTypeReadout(species, false)}
