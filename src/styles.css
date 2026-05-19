@@ -4,15 +4,88 @@ body,
   min-height: 100%;
 }
 
+:root {
+  --theme-transition-duration: 0.3s;
+  --theme-transition-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Interpolate palette surface colors when data-palette changes */
+@property --palette-bg {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #ffffff;
+}
+
+@property --palette-divider {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #e5e7eb;
+}
+
+@property --palette-border {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #d1d5db;
+}
+
+html {
+  transition:
+    --palette-bg var(--theme-transition-duration) var(--theme-transition-ease),
+    --palette-divider var(--theme-transition-duration) var(--theme-transition-ease),
+    --palette-border var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
 body {
   margin: 0;
   overflow-x: hidden;
   background-color: #ffffff;
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  transition:
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 html.dark body {
   background-color: #000000;
+}
+
+/* Default light/dark section shells */
+#root > .min-h-screen,
+#root .bg-white,
+#root .dark\:bg-black,
+.section-diagonal-gap {
+  transition:
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease),
+    color var(--theme-transition-duration) var(--theme-transition-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    transition: none;
+  }
+
+  body,
+  #root > .min-h-screen,
+  #root .bg-white,
+  #root .dark\:bg-black,
+  .section-diagonal-gap {
+    transition: none;
+  }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--theme-transition-duration);
+  animation-timing-function: var(--theme-transition-ease);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
 }
 
 .section-diagonal-gap {
@@ -26,6 +99,9 @@ html.dark body {
     #d1d5db 8px,
     #d1d5db 9px
   );
+  /* Tile from left so repeat fills to the right edge (center left a gap) */
+  background-size: 12.728px 12.728px;
+  background-position: 0 0;
 }
 
 html.dark .section-diagonal-gap {
@@ -37,6 +113,8 @@ html.dark .section-diagonal-gap {
     rgb(38 38 38) 8px,
     rgb(38 38 38) 9px
   );
+  background-size: 12.728px 12.728px;
+  background-position: 0 0;
 }
 
 /* Dot fill for empty spacer section middle column */
@@ -49,25 +127,14 @@ html.dark .spacer-middle-dots {
   background-image: radial-gradient(rgb(107 114 128 / 0.85) 1px, transparent 1px);
 }
 
-/* Eeveelution palettes — animated sprite in empty spacer (dots stay behind) */
+/* Empty spacer — Pokémon emerges from opening Poké Ball (see SpacerPokeballSpawn) */
 .spacer-eeveelution-sprite {
-  display: none;
-}
-
-html[data-palette="eevee"] .spacer-eeveelution-sprite[data-species="eevee"],
-html[data-palette="vaporeon"] .spacer-eeveelution-sprite[data-species="vaporeon"],
-html[data-palette="jolteon"] .spacer-eeveelution-sprite[data-species="jolteon"],
-html[data-palette="flareon"] .spacer-eeveelution-sprite[data-species="flareon"],
-html[data-palette="leafeon"] .spacer-eeveelution-sprite[data-species="leafeon"],
-html[data-palette="glaceon"] .spacer-eeveelution-sprite[data-species="glaceon"],
-html[data-palette="espeon"] .spacer-eeveelution-sprite[data-species="espeon"],
-html[data-palette="umbreon"] .spacer-eeveelution-sprite[data-species="umbreon"],
-html[data-palette="sylveon"] .spacer-eeveelution-sprite[data-species="sylveon"] {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
 }
 
+.spacer-pokeball-open-frame,
 .spacer-eeveelution-sprite-img {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
@@ -337,6 +404,7 @@ html[data-palette="espeon"] {
   --palette-bg: #dbb2e3;
   --palette-divider: #926ecc;
   --palette-border: #8653b2;
+  --palette-text-title: #ebe8f0;
   --palette-text: #294974;
   --palette-text-muted: #8653b2;
   --palette-readout-label: #e73752;
@@ -433,7 +501,10 @@ html:is([data-palette="eevee"],
   [data-palette="espeon"],
   [data-palette="umbreon"],
   [data-palette="sylveon"]) .eevee-panel-grid > * {
-  transition: background-color 0.45s ease;
+  transition:
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease),
+    color var(--theme-transition-duration) var(--theme-transition-ease);
   background-color: var(--palette-bg) !important;
 }
 
@@ -446,7 +517,24 @@ html:is([data-palette="eevee"],
   [data-palette="espeon"],
   [data-palette="umbreon"],
   [data-palette="sylveon"]) .eevee-footer-panels > * {
+  transition:
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease),
+    color var(--theme-transition-duration) var(--theme-transition-ease);
   background-color: var(--palette-bg) !important;
+}
+
+/* Palette surfaces — smooth bg/border/text when switching species */
+html[data-palette] .eevee-connect-panels > *,
+html[data-palette] .relax-panels-grid > *,
+html[data-palette] .border-gray-300.bg-white,
+html[data-palette] .bg-gray-900,
+html[data-palette] .section-diagonal-gap,
+html[data-palette] section.transition-colors {
+  transition:
+    background-color var(--theme-transition-duration) var(--theme-transition-ease),
+    border-color var(--theme-transition-duration) var(--theme-transition-ease),
+    color var(--theme-transition-duration) var(--theme-transition-ease);
 }
 
 /* Connect Elsewhere — single 1px row/col rules (borders, not gap fill — avoids double horizontal lines) */
@@ -947,7 +1035,7 @@ html:is([data-palette="eevee"],
   [data-palette="sylveon"]) .section-diagonal-gap {
   box-sizing: border-box;
   background-color: var(--palette-divider);
-  background-image: none;
+  /* Per-species motif — see eeveelution-dividers.css */
 }
 
 /* Umbreon — section / hero titles in crimson (beats shared palette text utilities) */
@@ -955,6 +1043,14 @@ html[data-palette="umbreon"] h1.text-gray-900,
 html[data-palette="umbreon"] h2.text-gray-900,
 html.dark[data-palette="umbreon"] h1.dark\:text-white,
 html.dark[data-palette="umbreon"] h2.dark\:text-white {
+  color: var(--palette-text-title) !important;
+}
+
+/* Espeon — hero + main section headings (soft white-gray) */
+html[data-palette="espeon"] h1.text-gray-900,
+html[data-palette="espeon"] h2.text-gray-900,
+html.dark[data-palette="espeon"] h1.dark\:text-white,
+html.dark[data-palette="espeon"] h2.dark\:text-white {
   color: var(--palette-text-title) !important;
 }
 

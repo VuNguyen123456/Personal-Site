@@ -15,6 +15,8 @@ import {
   Moon,
   Sun,
   Swords,
+  Volume2,
+  VolumeX,
 } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState, createContext, useContext, useRef, Fragment, type ReactNode } from "react";
 import { Button } from "./components/ui/button";
@@ -26,6 +28,11 @@ import {
 } from "./pokeApi";
 import { pickRandomPokemonDbSlug, pokemonDbGen5AnimatedSpriteUrl, pokemonDbPokedexUrl } from "./pokemonDbSlugs";
 import { techStackSections, type TechStackItem } from "./techStackData";
+import { SITE_AUDIO } from "./siteAudioLevels";
+import { isSiteAudioMuted } from "./siteAudioMute";
+import { playDetypingTick, playTextDespawn, playTextSpawn, playTypingTick } from "./typingSound";
+import { useDividerIndex } from "./dividerIndex";
+import { SpacerPokeballSpawn } from "./SpacerPokeballSpawn";
 import { useDarkMode, useTheme } from "./useDarkMode";
 
 const techInterests: { label: string; whyInterest: string }[] = [
@@ -476,13 +483,15 @@ type HoverTypewriterOptions = {
   releaseDelayMs?: number;
   /** After caption is fully shown, ignore click-to-dismiss for this many ms. */
   dismissMercyMs?: number;
+  /** Faint tick while characters type in (default on). */
+  typingSound?: boolean;
 };
 
 /** Character-by-character type in / out. */
 function useHoverWordTypewriter(options: HoverTypewriterOptions = {}) {
   const charInMs = options.charInMs ?? options.wordInMs ?? 20;
   const charOutMs = options.charOutMs ?? options.wordOutMs ?? 12;
-  const { releaseDelayMs = 0, dismissMercyMs = 0 } = options;
+  const { releaseDelayMs = 0, dismissMercyMs = 0, typingSound = true } = options;
   const [text, setText] = useState("");
   const [visibleLength, setVisibleLength] = useState(0);
   const [phase, setPhase] = useState<"idle" | "in" | "out">("idle");
@@ -557,6 +566,7 @@ function useHoverWordTypewriter(options: HoverTypewriterOptions = {}) {
         return;
       }
       completedAtRef.current = null;
+      if (typingSound) playTextDespawn();
       setText("");
       setVisibleLength(0);
       setPhase("idle");
@@ -564,11 +574,12 @@ function useHoverWordTypewriter(options: HoverTypewriterOptions = {}) {
       return;
     }
 
+    if (typingSound) playTextSpawn();
     setText(caption);
     setVisibleLength(caption.length);
     setPhase("in");
     completedAtRef.current = Date.now();
-  }, [text, dismissMercyMs]);
+  }, [text, dismissMercyMs, typingSound]);
 
   useEffect(() => {
     return () => {
@@ -583,9 +594,12 @@ function useHoverWordTypewriter(options: HoverTypewriterOptions = {}) {
       return;
     }
     completedAtRef.current = null;
-    const t = window.setTimeout(() => setVisibleLength((n) => Math.min(text.length, n + 1)), charInMs);
+    const t = window.setTimeout(() => {
+      if (typingSound) playTypingTick(text[visibleLength]);
+      setVisibleLength((n) => Math.min(text.length, n + 1));
+    }, charInMs);
     return () => window.clearTimeout(t);
-  }, [phase, visibleLength, text, charInMs]);
+  }, [phase, visibleLength, text, charInMs, typingSound]);
 
   useEffect(() => {
     if (phase !== "out") return;
@@ -596,9 +610,12 @@ function useHoverWordTypewriter(options: HoverTypewriterOptions = {}) {
       completedAtRef.current = null;
       return;
     }
-    const t = window.setTimeout(() => setVisibleLength((n) => Math.max(0, n - 1)), charOutMs);
+    const t = window.setTimeout(() => {
+      if (typingSound && visibleLength > 0) playDetypingTick(text[visibleLength - 1]);
+      setVisibleLength((n) => Math.max(0, n - 1));
+    }, charOutMs);
     return () => window.clearTimeout(t);
-  }, [phase, visibleLength, charOutMs]);
+  }, [phase, visibleLength, charOutMs, text, typingSound]);
 
   const displayLine = text.slice(0, visibleLength);
   const caretVisible =
@@ -1000,20 +1017,24 @@ function InterestCell({
   whyInterest,
   onHover,
   onLeave,
+  onActivate,
 }: {
   label: string;
   whyInterest: string;
   onHover: (text: string) => void;
   onLeave: () => void;
+  onActivate: (text: string) => void;
 }) {
   return (
     <button
       type="button"
+      data-typewriter-accelerate
       onMouseEnter={() => onHover(whyInterest)}
       onMouseLeave={onLeave}
       onFocus={() => onHover(whyInterest)}
       onBlur={onLeave}
-      className="block w-full cursor-pointer py-0 text-left font-mono text-sm leading-snug text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-gray-400 dark:hover:text-gray-200 first:pt-0"
+      onClick={() => onActivate(whyInterest)}
+      className="block w-full cursor-pointer border-0 bg-transparent py-0 text-left font-mono text-sm leading-snug text-gray-600 transition-colors hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-gray-400 dark:hover:text-gray-200 first:pt-0"
     >
       <span className="text-gray-400 dark:text-gray-500">// </span>
       {label}
@@ -1066,13 +1087,22 @@ function WorkExperienceRow({ entry }: { entry: WorkExperienceEntry }) {
   const [expanded, setExpanded] = useState(false);
   const panelId = `work-exp-panel-${entry.id}`;
 
+  const toggleExpanded = useCallback(() => {
+    setExpanded((open) => {
+      if (open) playTextDespawn();
+      else playTextSpawn();
+      return !open;
+    });
+  }, []);
+
   return (
     <article className="min-w-0">
       <button
         type="button"
+        data-no-click-sound
         aria-expanded={expanded}
         aria-controls={panelId}
-        onClick={() => setExpanded((open) => !open)}
+        onClick={toggleExpanded}
         aria-label={
           expanded
             ? `Collapse ${entry.role} at ${entry.company} details`
@@ -1173,16 +1203,9 @@ function CredentialGridRow({ entry, index }: { entry: CredentialEntry; index: nu
     },
     [motivation, description],
   );
-  const readoutRowHandlers = hasHover
-    ? {
-        onMouseEnter: engageRow,
-        onMouseLeave: releaseRow,
-        onClick: (e: React.MouseEvent) => accelerateFromRow(e, false),
-        onContextMenu: (e: React.MouseEvent) => accelerateFromRow(e, false),
-      }
-    : {};
   const middleRowHandlers = hasHover
     ? {
+        "data-typewriter-accelerate": true,
         onMouseEnter: engageRow,
         onMouseLeave: releaseRow,
         onClick: (e: React.MouseEvent) => accelerateFromRow(e, true),
@@ -1210,9 +1233,8 @@ function CredentialGridRow({ entry, index }: { entry: CredentialEntry; index: nu
 
   return (
     <>
-      <div
-        className={`relative flex min-h-0 min-w-0 flex-col self-stretch overflow-x-hidden ${portfolioMiddlePad} ${rowPointerClass}`}
-        {...readoutRowHandlers}
+      <motion.div
+        className={`relative flex min-h-0 min-w-0 flex-col self-stretch overflow-x-hidden ${portfolioMiddlePad}`}
       >
         {index > 0 ? <CredentialRowTopSpacer /> : null}
         <div className="flex min-w-0 items-start justify-start py-1 sm:py-1.5">
@@ -1222,10 +1244,10 @@ function CredentialGridRow({ entry, index }: { entry: CredentialEntry; index: nu
             caretVisible={motivation.caretVisible}
             typingComplete={motivation.typingComplete}
             reserveLine={motivationText}
-            idleHint="Hover the award title for how it relates to you."
+            idleHint="Hover the award title in the center for how it relates to you."
           />
         </div>
-      </div>
+      </motion.div>
       <div className={`relative min-w-0 overflow-visible border-l border-r border-solid ${borderLine} ${portfolioMiddlePad}`}>
         {index > 0 ? <ViewportAdjacentRulesShaper /> : null}
         <div className={middleColumnInnerClass}>
@@ -1263,8 +1285,7 @@ function CredentialGridRow({ entry, index }: { entry: CredentialEntry; index: nu
         </div>
       </div>
       <div
-        className={`relative flex min-h-0 min-w-0 flex-col self-stretch overflow-x-hidden ${portfolioMiddlePad} ${rowPointerClass}`}
-        {...readoutRowHandlers}
+        className={`relative flex min-h-0 min-w-0 flex-col self-stretch overflow-x-hidden ${portfolioMiddlePad}`}
       >
         {index > 0 ? <CredentialRowTopSpacer /> : null}
         <div className="flex min-w-0 items-start justify-start py-1 sm:py-1.5">
@@ -1274,7 +1295,7 @@ function CredentialGridRow({ entry, index }: { entry: CredentialEntry; index: nu
             caretVisible={description.caretVisible}
             typingComplete={description.typingComplete}
             reserveLine={descriptionText}
-            idleHint="Hover the award title for a description."
+            idleHint="Hover the award title in the center for a description."
           />
         </div>
       </div>
@@ -1363,16 +1384,9 @@ function FeaturedProjectGridRow({ project, index }: { project: PortfolioProject;
     },
     [accelerate],
   );
-  const readoutRowHandlers = caption
-    ? {
-        onMouseEnter: () => engage(caption),
-        onMouseLeave: () => release(),
-        onClick: (e: React.MouseEvent) => accelerateFromRow(e, false),
-        onContextMenu: (e: React.MouseEvent) => accelerateFromRow(e, false),
-      }
-    : {};
   const middleRowHandlers = caption
     ? {
+        "data-typewriter-accelerate": true,
         onMouseEnter: () => engage(caption),
         onMouseLeave: () => release(),
         onClick: (e: React.MouseEvent) => accelerateFromRow(e, true),
@@ -1387,7 +1401,7 @@ function FeaturedProjectGridRow({ project, index }: { project: PortfolioProject;
   const isFirstFeaturedRow = index === 0;
   const readoutColClass = `relative flex min-h-0 min-w-0 self-stretch overflow-x-hidden px-1 sm:pl-2 sm:pr-0.5 ${
     isFirstFeaturedRow ? featuredFirstRowReadoutPad : "py-1.5 sm:py-2"
-  } ${rowPointerClass}`;
+  }`;
   const featuredMiddleColPad = isFirstFeaturedRow ? featuredFirstRowMiddlePad : portfolioMiddlePad;
   const featuredRowBodyPad = isFirstFeaturedRow ? featuredFirstRowBodyPad : "py-1.5 sm:py-2";
   const readoutUsesDirectCenterLayout =
@@ -1409,6 +1423,7 @@ function FeaturedProjectGridRow({ project, index }: { project: PortfolioProject;
           caretVisible={caretVisible}
           typingComplete={typingComplete}
           reserveAfterTypingSpace={project.hoverRandomPokemonFromDex === true}
+          idleHint="Hover the project title in the center for a short hint."
           afterTyping={
             project.hoverRandomPokemonFromDex ? <PokemonRandomHoverSprite /> : project.hoverAfterTyping
           }
@@ -1425,6 +1440,7 @@ function FeaturedProjectGridRow({ project, index }: { project: PortfolioProject;
               fullLine={fullLine}
               caretVisible={caretVisible}
               typingComplete={typingComplete}
+              idleHint="Hover the project title in the center for a short hint."
               afterTyping={project.hoverAfterTyping}
             />
           </AnimatedHeightShell>
@@ -1436,7 +1452,7 @@ function FeaturedProjectGridRow({ project, index }: { project: PortfolioProject;
   return (
     <>
       {project.hoverRandomPokemonFromDex ? (
-        <div className={readoutColClass} {...readoutRowHandlers}>
+        <div className={readoutColClass}>
           {readoutInner}
         </div>
       ) : (
@@ -1444,7 +1460,6 @@ function FeaturedProjectGridRow({ project, index }: { project: PortfolioProject;
           layout
           transition={featuredRowLayoutTransition}
           className={readoutColClass}
-          {...readoutRowHandlers}
         >
           {readoutInner}
         </motion.div>
@@ -1635,15 +1650,18 @@ function WashingtonDcClockPanel() {
   );
 }
 
-/** Full viewport width from inside the middle column (margin-based; avoids clip with overflow-x) */
-const fullBleed =
-  "relative w-screen max-w-none shrink-0 ml-[calc(50%-50vw)] mr-[calc(50%-50vw)]";
+/** Full width of page shell (w-full avoids 100vw + scrollbar clip on the right edge) */
+const fullBleed = "relative w-full shrink-0";
 
 export function SectionDiagonalGap({ bottomBorder = false }: { bottomBorder?: boolean }) {
+  const dividerIndex = useDividerIndex();
+  const crawlClass =
+    dividerIndex % 2 === 0 ? "section-diagonal-gap--crawl-rtl" : "section-diagonal-gap--crawl-ltr";
+
   return (
     <div
       aria-hidden
-      className={`section-diagonal-gap${bottomBorder ? ` border-b border-solid ${borderLine}` : ""}`}
+      className={`section-diagonal-gap ${fullBleed} ${crawlClass}${bottomBorder ? ` border-b border-solid ${borderLine}` : ""}`}
     />
   );
 }
@@ -1705,6 +1723,7 @@ function EeveelutionBar({
   const cryAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const playEeveelutionCry = useCallback((slug: (typeof EEVEELUTION_SPECIES)[number]) => {
+    if (isSiteAudioMuted()) return;
     const url =
       slug === "eevee"
         ? EEVEE_CRIES[eeveeCryIndexRef.current]
@@ -1717,7 +1736,7 @@ function EeveelutionBar({
     }
     const audio = cryAudioRef.current;
     audio.src = url;
-    audio.volume = 0.5;
+    audio.volume = SITE_AUDIO.eeveelutionCry;
     audio.currentTime = 0;
     void audio.play().catch(() => {});
   }, []);
@@ -1967,6 +1986,7 @@ function SpacerPokemonReadoutAside({
 
 /** Empty section shell (top/bottom borders + middle column) for page breathing room. */
 export function EmptySpacerSection({ className }: { className: string }) {
+  const { activeEeveelutionPalette } = useTheme();
   const typeHoverRequestRef = useRef(0);
   const activeSpeciesRef = useRef<(typeof EEVEELUTION_SPECIES)[number] | null>(null);
   const lastRightCaptionRef = useRef("");
@@ -2126,7 +2146,7 @@ export function EmptySpacerSection({ className }: { className: string }) {
     ) : null;
 
   return (
-    <section aria-hidden className={`relative w-full transition-colors duration-300 ${className}`}>
+    <section aria-hidden className={`relative w-full transition-colors duration-300 ease-in-out ${className}`}>
       <SectionTopBorder2 />
       <ThreeColumnBody
         columnClassName={`${sectionColumnPad} spacer-middle-dots`}
@@ -2156,26 +2176,19 @@ export function EmptySpacerSection({ className }: { className: string }) {
           className="relative flex min-h-56 items-center justify-center sm:min-h-72 lg:min-h-96"
           onMouseLeave={clearTypeReadout}
         >
-          {EEVEELUTION_SPECIES.map((species) => (
-            <button
-              key={species}
-              type="button"
-              data-species={species}
-              className="spacer-eeveelution-sprite pointer-events-auto z-[2] cursor-pointer border-0 bg-transparent p-0"
-              aria-label={`Show ${spacerSpeciesLabel(species)} details`}
-              aria-pressed={activeSpecies === species && isReadoutFullyShown}
-              onMouseEnter={() => showTypeReadout(species, false)}
-              onFocus={() => showTypeReadout(species, false)}
+          {activeEeveelutionPalette ? (
+            <SpacerPokeballSpawn
+              key={activeEeveelutionPalette}
+              species={activeEeveelutionPalette}
+              spriteSrc={spacerEeveelutionAnimUrl(activeEeveelutionPalette)}
+              ariaLabel={`Show ${spacerSpeciesLabel(activeEeveelutionPalette)} details`}
+              ariaPressed={activeSpecies === activeEeveelutionPalette && isReadoutFullyShown}
+              onMouseEnter={() => showTypeReadout(activeEeveelutionPalette, false)}
+              onFocus={() => showTypeReadout(activeEeveelutionPalette, false)}
               onBlur={clearTypeReadout}
-              onClick={() => handleSpriteClick(species)}
-            >
-              <img
-                src={spacerEeveelutionAnimUrl(species)}
-                alt=""
-                className="spacer-eeveelution-sprite-img h-40 w-auto max-w-[min(92%,320px)] object-contain sm:h-48 lg:h-56"
-              />
-            </button>
-          ))}
+              onClick={() => handleSpriteClick(activeEeveelutionPalette)}
+            />
+          ) : null}
         </motion.div>
       </ThreeColumnBody>
       <SectionBottomBorder2 />
@@ -2196,7 +2209,7 @@ function CompactSpacerSectionShell({
     <section
       aria-hidden={ariaLabel == null}
       aria-label={ariaLabel}
-      className={`relative w-full transition-colors duration-300 ${className}`}
+      className={`relative w-full transition-colors duration-300 ease-in-out ${className}`}
     >
       <SectionTopBorder2 />
       <ThreeColumnBody columnClassName={eeveelutionColumnPad}>{children}</ThreeColumnBody>
@@ -2431,17 +2444,24 @@ const TechBadge = ({
   hoverCaption,
   personalExperience,
   personalWhy,
+  lit,
   onHoverDescribe,
   onHoverEnd,
+  onActivate,
 }: TechStackItem & {
+  lit: boolean;
   onHoverDescribe: (item: TechStackItem) => void;
   onHoverEnd: () => void;
+  onActivate: (item: TechStackItem) => void;
 }) => {
   const iconEl = iconImage ? (
     <img
       src={iconImage}
       alt=""
-      className="h-8 w-8 object-contain opacity-45 grayscale transition-[transform,filter,opacity] duration-200 group-hover:scale-110 group-hover:opacity-100 group-hover:grayscale-0 group-focus-within:opacity-100 group-focus-within:grayscale-0"
+      className={cn(
+        "h-8 w-8 object-contain transition-[transform,filter,opacity] duration-200",
+        lit ? "scale-110 opacity-100 grayscale-0" : "opacity-45 grayscale",
+      )}
       onError={(e) => {
         if (fallbackIcon && e.currentTarget.src !== fallbackIcon) {
           e.currentTarget.src = fallbackIcon;
@@ -2449,13 +2469,22 @@ const TechBadge = ({
       }}
     />
   ) : (
-    <span className="flex h-8 w-8 items-center justify-center text-xs font-semibold text-gray-500 opacity-50 transition-opacity duration-200 group-hover:opacity-100 dark:text-gray-400">
+    <span
+      className={cn(
+        "flex h-8 w-8 items-center justify-center text-xs font-semibold transition-opacity duration-200 dark:text-gray-400",
+        lit ? "text-gray-700 opacity-100 dark:text-gray-200" : "text-gray-500 opacity-50",
+      )}
+    >
       {name.slice(0, 2)}
     </span>
   );
 
-  const hitTargetClass =
-    "inline-flex rounded-sm p-0.5 outline-none ring-offset-2 ring-offset-white transition-[opacity,box-shadow] hover:opacity-90 hover:ring-2 hover:ring-gray-300/80 focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 dark:ring-offset-black dark:hover:ring-gray-600 dark:focus-visible:ring-gray-500";
+  const hitTargetClass = cn(
+    "inline-flex rounded-sm border-0 bg-transparent p-0.5 outline-none ring-offset-2 ring-offset-white transition-[opacity,box-shadow,transform] focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 dark:ring-offset-black dark:focus-visible:ring-gray-500",
+    lit
+      ? "opacity-90 ring-2 ring-gray-300/80 dark:ring-gray-600"
+      : "opacity-100 ring-0 ring-transparent",
+  );
 
   const hoverItem: TechStackItem = {
     name,
@@ -2474,45 +2503,75 @@ const TechBadge = ({
     onBlur: onHoverEnd,
   };
 
+  const openSite = website
+    ? (e: React.MouseEvent) => {
+        e.preventDefault();
+        window.open(website, "_blank", "noopener,noreferrer");
+      }
+    : undefined;
+
   return (
-    <div className="group relative">
-      {website ? (
-        <a
-          href={website}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`${name} — hover for description, click to open site`}
-          className={hitTargetClass}
-          {...hoverHandlers}
-        >
-          {iconEl}
-        </a>
-      ) : (
-        <span className={`${hitTargetClass} cursor-pointer`} aria-label={name} {...hoverHandlers}>
-          {iconEl}
-        </span>
-      )}
-    </div>
+    <motion.div className="relative">
+      <button
+        type="button"
+        data-typewriter-accelerate
+        aria-label={
+          website
+            ? `${name} — hover for details, left-click to show all or close, right-click to open site`
+            : `${name} — hover for details, left-click to show all or close`
+        }
+        className={cn(hitTargetClass, "cursor-pointer")}
+        {...hoverHandlers}
+        onClick={() => onActivate(hoverItem)}
+        onContextMenu={openSite}
+      >
+        {iconEl}
+      </button>
+    </motion.div>
   );
 };
 
 function TechStackSection() {
-  const { engage: engageDesc, release: releaseDesc, displayLine, caretVisible } = useHoverWordTypewriter();
+  const {
+    engage: engageDesc,
+    release: releaseDesc,
+    accelerate: accelerateDesc,
+    displayLine,
+    caretVisible,
+    phase: descPhase,
+  } = useHoverWordTypewriter({ charInMs: 16, charOutMs: 3, releaseDelayMs: 60 });
   const {
     engage: engageExp,
     release: releaseExp,
+    accelerate: accelerateExp,
     displayLine: experienceLine,
     caretVisible: experienceCaret,
-  } = useHoverWordTypewriter();
-  const { engage: engageWhy, release: releaseWhy, displayLine: whyLine, caretVisible: whyCaret } =
-    useHoverWordTypewriter();
+    phase: expPhase,
+  } = useHoverWordTypewriter({ charInMs: 16, charOutMs: 3, releaseDelayMs: 60 });
+  const {
+    engage: engageWhy,
+    release: releaseWhy,
+    accelerate: accelerateWhy,
+    displayLine: whyLine,
+    caretVisible: whyCaret,
+    phase: whyPhase,
+  } = useHoverWordTypewriter({ charInMs: 16, charOutMs: 3, releaseDelayMs: 60 });
   const {
     engage: engageInterest,
     release: releaseInterest,
+    accelerate: accelerateInterest,
     displayLine: interestLine,
     caretVisible: interestCaret,
-  } = useHoverWordTypewriter();
+    fullLine: interestFullLine,
+    phase: interestPhase,
+  } = useHoverWordTypewriter({
+    charInMs: 16,
+    charOutMs: 3,
+    releaseDelayMs: 60,
+  });
   const [activeName, setActiveName] = useState("");
+  const [hoveredTool, setHoveredTool] = useState<string | null>(null);
+  const [pinnedTool, setPinnedTool] = useState<string | null>(null);
 
   const engageInterestWhy = useCallback(
     (text: string) => {
@@ -2524,6 +2583,24 @@ function TechStackSection() {
   const releaseInterestWhy = useCallback(() => {
     releaseInterest();
   }, [releaseInterest]);
+
+  const activateInterestWhy = useCallback(
+    (text: string) => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+
+      const isSame = interestFullLine === trimmed;
+      if (isSame && interestPhase === "in") {
+        accelerateInterest();
+        return;
+      }
+
+      if (interestPhase === "idle" || !isSame) {
+        engageInterest(trimmed);
+      }
+    },
+    [accelerateInterest, engageInterest, interestFullLine, interestPhase],
+  );
 
   const engageTool = useCallback(
     (item: TechStackItem) => {
@@ -2541,9 +2618,47 @@ function TechStackSection() {
     releaseWhy();
   }, [releaseDesc, releaseExp, releaseWhy]);
 
+  const handleToolHoverStart = useCallback(
+    (item: TechStackItem) => {
+      setHoveredTool(item.name);
+      engageTool(item);
+    },
+    [engageTool],
+  );
+
+  const handleToolHoverEnd = useCallback(() => {
+    setHoveredTool(null);
+    releaseTool();
+  }, [releaseTool]);
+
+  const accelerateAllToolReadouts = useCallback(() => {
+    accelerateDesc();
+    accelerateExp();
+    accelerateWhy();
+  }, [accelerateDesc, accelerateExp, accelerateWhy]);
+
+  const activateTool = useCallback(
+    (item: TechStackItem) => {
+      const isSame = activeName === item.name;
+
+      if (isSame && descPhase === "in") {
+        accelerateAllToolReadouts();
+        setPinnedTool(null);
+        return;
+      }
+
+      if (!isSame || descPhase === "idle") {
+        setPinnedTool(item.name);
+        engageTool(item);
+      }
+    },
+    [activeName, accelerateAllToolReadouts, descPhase, engageTool],
+  );
+
   useEffect(() => {
     if (!displayLine && !caretVisible && !experienceLine && !experienceCaret && !whyLine && !whyCaret) {
       setActiveName("");
+      setPinnedTool(null);
     }
   }, [displayLine, caretVisible, experienceLine, experienceCaret, whyLine, whyCaret]);
 
@@ -2572,6 +2687,9 @@ function TechStackSection() {
             <h2 className="text-3xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white sm:text-4xl">
               Tech Stack
             </h2>
+            <p className="mt-1 max-w-xl font-mono text-[10px] leading-snug text-gray-500 dark:text-gray-400 sm:text-[11px]">
+              Hover a logo for details. Left-click: show all or close · Right-click: open site
+            </p>
           </motion.div>
         </TechStackMiddleCell>
         <TechStackSideCell side="right" className="sm:pt-8">
@@ -2585,7 +2703,17 @@ function TechStackSection() {
               <TechStackCategory title={section.title}>
                 <div className="flex flex-wrap gap-4">
                   {section.items.map((item) => (
-                    <TechBadge key={item.name} {...item} onHoverDescribe={engageTool} onHoverEnd={releaseTool} />
+                    <TechBadge
+                      key={item.name}
+                      {...item}
+                      lit={
+                        hoveredTool === item.name ||
+                        (hoveredTool === null && pinnedTool === item.name)
+                      }
+                      onHoverDescribe={handleToolHoverStart}
+                      onHoverEnd={handleToolHoverEnd}
+                      onActivate={activateTool}
+                    />
                   ))}
                 </div>
               </TechStackCategory>
@@ -2627,12 +2755,31 @@ function TechStackSection() {
                 whyInterest={interest.whyInterest}
                 onHover={engageInterestWhy}
                 onLeave={releaseInterestWhy}
+                onActivate={activateInterestWhy}
               />
             ))}
           </TechStackCategory>
         </TechStackMiddleCell>
         <TechStackSideCell side="right">
-          <TechStackInterestWhySlot whyLine={interestLine} whyCaret={interestCaret} />
+          <motion.div
+            className={interestFullLine.length > 0 ? "min-w-0 cursor-pointer" : "min-w-0"}
+            data-typewriter-accelerate={interestFullLine.length > 0 ? true : undefined}
+            onClick={interestFullLine.length > 0 ? () => accelerateInterest() : undefined}
+            onKeyDown={
+              interestFullLine.length > 0
+                ? (e: React.KeyboardEvent) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      accelerateInterest();
+                    }
+                  }
+                : undefined
+            }
+            role={interestFullLine.length > 0 ? "button" : undefined}
+            tabIndex={interestFullLine.length > 0 ? 0 : undefined}
+          >
+            <TechStackInterestWhySlot whyLine={interestLine} whyCaret={interestCaret} />
+          </motion.div>
         </TechStackSideCell>
 
         <TechStackSideCell side="left" />
@@ -2647,7 +2794,7 @@ function TechStackSection() {
 }
 
 export default function PersonalHomepage() {
-  const { darkMode, toggleDarkMode } = useDarkMode();
+  const { darkMode, toggleDarkMode, siteAudioMuted, toggleSiteAudioMuted } = useDarkMode();
   const [showAllProjects, setShowAllProjects] = useState(false);
   const weirdWebsiteCategories = [
     {
@@ -2841,13 +2988,13 @@ We wanted something that follows the user, not the website. Instead of begging e
   const displayedProjects = showAllProjects ? projects : projects.slice(0, 2);
 
   return (
-    <div className="relative min-h-screen bg-white transition-colors duration-300 dark:bg-black">
+    <div className="relative min-h-screen bg-white transition-colors duration-300 ease-in-out dark:bg-black">
       <motion.section
         id="hero"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8 }}
-        className="relative w-full bg-white transition-colors duration-300 dark:bg-black"
+        className="relative w-full bg-white transition-colors duration-300 ease-in-out dark:bg-black"
       >
         <SectionTopBorder2 />
         <ThreeColumnBody columnClassName={sectionColumnPad}>
@@ -2857,22 +3004,36 @@ We wanted something that follows the user, not the website. Instead of begging e
             transition={{ duration: 0.6, delay: 0.4 }}
             className="relative z-[2] flex min-w-0 flex-col gap-1.5"
           >
-            <button
-              type="button"
-              onClick={toggleDarkMode}
-              className="absolute -right-2 top-0 z-10 shrink-0 rounded-full border border-gray-300 p-2 text-gray-700 transition-colors hover:bg-gray-100 sm:-right-3.5 lg:-right-5 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-neutral-800"
-              aria-label="Toggle dark mode"
-            >
-              {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
-            <div className={`flex flex-col gap-0.5 text-left pb-2 sm:pb-2.5 ${sectionTitlePad}`}>
-              <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
-                Computer Science
-              </p>
-              <h1 className="min-w-0 max-w-full break-words pr-12 text-3xl font-bold leading-snug tracking-tight text-gray-900 sm:text-4xl md:text-5xl dark:text-white">
-                Vu Nguyen
-              </h1>
-            </div>
+            <motion.div className={`flex items-center justify-between gap-3 pb-0 sm:pb-0.5 ${sectionTitlePad}`}>
+              <motion.div className="flex min-w-0 flex-1 flex-col gap-0.5 text-left">
+                <p className="text-xs font-semibold uppercase tracking-widest text-gray-500 dark:text-gray-400">
+                  Computer Science
+                </p>
+                <h1 className="min-w-0 max-w-full break-words text-3xl font-bold leading-tight tracking-tight text-gray-900 sm:text-4xl md:text-5xl dark:text-white">
+                  Vu Nguyen
+                </h1>
+              </motion.div>
+              <motion.div className="flex shrink-0 translate-y-0.5 items-center gap-1.5 self-center sm:translate-y-1">
+                <button
+                  type="button"
+                  data-no-click-sound
+                  onClick={toggleSiteAudioMuted}
+                  className="rounded-full border border-gray-300 p-2 text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-neutral-800"
+                  aria-label={siteAudioMuted ? "Unmute site sounds" : "Mute all site sounds"}
+                  aria-pressed={siteAudioMuted}
+                >
+                  {siteAudioMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleDarkMode()}
+                  className="rounded-full border border-gray-300 p-2 text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-neutral-800"
+                  aria-label="Toggle dark mode"
+                >
+                  {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </button>
+              </motion.div>
+            </motion.div>
             <div className="flex min-w-0 flex-col">
               <div aria-hidden className={rulePadY}>
                 <ViewportSingleRule />
@@ -2949,7 +3110,7 @@ We wanted something that follows the user, not the website. Instead of begging e
 
       <section
         id="projects"
-        className="relative w-full bg-white transition-colors duration-300 dark:bg-black"
+        className="relative w-full bg-white transition-colors duration-300 ease-in-out dark:bg-black"
       >
         <SectionTopBorder2 />
         <MiddleRuleLayoutContext.Provider value={null}>
@@ -2994,7 +3155,14 @@ We wanted something that follows the user, not the website. Instead of begging e
 
                   <div className="flex items-center justify-center py-0.5 sm:py-1">
                     <Button
-                      onClick={() => setShowAllProjects(!showAllProjects)}
+                      data-no-click-sound
+                      onClick={() => {
+                        setShowAllProjects((open) => {
+                          if (open) playTextDespawn();
+                          else playTextSpawn();
+                          return !open;
+                        });
+                      }}
                       variant="ghost"
                       size="relaxRow"
                       aria-label={showAllProjects ? "See less projects" : "See more projects"}
@@ -3024,7 +3192,7 @@ We wanted something that follows the user, not the website. Instead of begging e
 
       <section
         id="work-experience"
-        className="relative w-full bg-white transition-colors duration-300 dark:bg-black"
+        className="relative w-full bg-white transition-colors duration-300 ease-in-out dark:bg-black"
       >
         <SectionTopBorder2 />
         <MiddleRuleLayoutContext.Provider value={null}>
@@ -3072,7 +3240,7 @@ We wanted something that follows the user, not the website. Instead of begging e
 
       <SectionDiagonalGap />
 
-      <section id="tech-stack" className="relative w-full bg-white transition-colors duration-300 dark:bg-black">
+      <section id="tech-stack" className="relative w-full bg-white transition-colors duration-300 ease-in-out dark:bg-black">
         <SectionTopBorder2 />
         <TechStackSection />
         <SectionBottomBorder2 />
@@ -3082,7 +3250,7 @@ We wanted something that follows the user, not the website. Instead of begging e
 
       <section
         id="credentials"
-        className="relative w-full bg-white transition-colors duration-300 dark:bg-black"
+        className="relative w-full bg-white transition-colors duration-300 ease-in-out dark:bg-black"
       >
         <SectionTopBorder2 />
         <MiddleRuleLayoutContext.Provider value={null}>
@@ -3133,7 +3301,7 @@ We wanted something that follows the user, not the website. Instead of begging e
 
       <SectionDiagonalGap />
 
-      <section id="relaxing" className="relative w-full bg-white transition-colors duration-300 dark:bg-black">
+      <section id="relaxing" className="relative w-full bg-white transition-colors duration-300 ease-in-out dark:bg-black">
         <SectionTopBorder2 />
         <ThreeColumnBody columnClassName={sectionColumnPad}>
           <motion.div className={`mb-0 flex flex-col gap-0 text-left ${sectionTitlePad}`}>
@@ -3207,7 +3375,7 @@ We wanted something that follows the user, not the website. Instead of begging e
 
       <SectionDiagonalGap />
 
-      <section id="connect" className="relative w-full bg-white transition-colors duration-300 dark:bg-black">
+      <section id="connect" className="relative w-full bg-white transition-colors duration-300 ease-in-out dark:bg-black">
         <SectionTopBorder2 />
         <ThreeColumnBody columnClassName={sectionColumnPad}>
           <motion.div
@@ -3290,7 +3458,7 @@ We wanted something that follows the user, not the website. Instead of begging e
         </div>
       )}
 
-      <footer className="relative w-full bg-white transition-colors duration-300 dark:bg-black">
+      <footer className="relative w-full bg-white transition-colors duration-300 ease-in-out dark:bg-black">
         <SectionTopBorder2 />
         <ThreeColumnBody columnClassName="px-2 pb-0 pt-0 sm:px-3 lg:px-4">
           <MiddleColumnBleed>

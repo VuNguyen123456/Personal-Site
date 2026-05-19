@@ -1,9 +1,25 @@
-import { createContext, createElement, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  createElement,
+  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import { isEeveelutionPaletteId, type EeveelutionPaletteId } from "./eeveePalette";
+import { setSiteAudioMuted } from "./siteAudioMute";
+import { withThemeTransition } from "./themeTransition";
+import { FloatingPokeball } from "./FloatingPokeball";
+import { GlobalClickSounds } from "./useGlobalClickSounds";
+import { GlobalScrollSounds } from "./useScrollSounds";
 
 type ThemeContextValue = {
   darkMode: boolean;
   toggleDarkMode: () => void;
+  siteAudioMuted: boolean;
+  toggleSiteAudioMuted: () => void;
   eeveelutionsUnlocked: boolean;
   activeEeveelutionPalette: EeveelutionPaletteId | null;
   onEeveelutionClick: (slug: string) => void;
@@ -12,13 +28,15 @@ type ThemeContextValue = {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 function useDarkModeState(): ThemeContextValue {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [themeToggleClickCount, setThemeToggleClickCount] = useState(0);
   const [activeEeveelutionPalette, setActiveEeveelutionPalette] = useState<EeveelutionPaletteId | null>(null);
+  const [siteAudioMuted, setSiteAudioMutedState] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem("darkMode");
-    if (saved === "true") setDarkMode(true);
+    setDarkMode(true);
+    setSiteAudioMuted(false);
+    setSiteAudioMutedState(false);
   }, []);
 
   useEffect(() => {
@@ -38,19 +56,33 @@ function useDarkModeState(): ThemeContextValue {
   const eeveelutionsUnlocked = themeToggleClickCount >= 2;
 
   const toggleDarkMode = useCallback(() => {
-    setActiveEeveelutionPalette(null);
-    setDarkMode((prev) => !prev);
-    setThemeToggleClickCount((count) => count + 1);
+    withThemeTransition(() => {
+      setActiveEeveelutionPalette(null);
+      setDarkMode((prev) => !prev);
+      setThemeToggleClickCount((count) => count + 1);
+    });
   }, []);
 
   const onEeveelutionClick = useCallback((slug: string) => {
     if (!isEeveelutionPaletteId(slug)) return;
-    setActiveEeveelutionPalette((current) => (current === slug ? null : slug));
+    withThemeTransition(() => {
+      setActiveEeveelutionPalette((current) => (current === slug ? null : slug));
+    });
+  }, []);
+
+  const toggleSiteAudioMuted = useCallback(() => {
+    setSiteAudioMutedState((prev) => {
+      const next = !prev;
+      setSiteAudioMuted(next);
+      return next;
+    });
   }, []);
 
   return {
     darkMode,
     toggleDarkMode,
+    siteAudioMuted,
+    toggleSiteAudioMuted,
     eeveelutionsUnlocked,
     activeEeveelutionPalette,
     onEeveelutionClick,
@@ -59,7 +91,24 @@ function useDarkModeState(): ThemeContextValue {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const value = useDarkModeState();
-  return createElement(ThemeContext.Provider, { value }, children);
+  return createElement(
+    ThemeContext.Provider,
+    { value },
+    createElement(
+      GlobalClickSounds,
+      null,
+      createElement(
+        GlobalScrollSounds,
+        null,
+        createElement(
+          Fragment,
+          null,
+          createElement(FloatingPokeball, null),
+          children,
+        ),
+      ),
+    ),
+  );
 }
 
 export function useTheme() {
