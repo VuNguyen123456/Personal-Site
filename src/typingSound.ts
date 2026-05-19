@@ -5,6 +5,8 @@ import { isSiteAudioMuted } from "./siteAudioMute";
 
 let audioContext: AudioContext | null = null;
 let audioResumePromise: Promise<void> | null = null;
+/** Set once a gesture has successfully started the shared AudioContext. */
+let audioUnlocked = false;
 let lastTickAt = 0;
 let lastSpawnAt = 0;
 let lastDespawnAt = 0;
@@ -32,22 +34,56 @@ function getAudioContext(): AudioContext | null {
   return audioContext;
 }
 
+function markUnlocked(ctx: AudioContext): void {
+  if (ctx.state === "running") audioUnlocked = true;
+}
+
+/**
+ * Must run synchronously inside click / pointerdown / keydown (browser autoplay policy).
+ * Plays a one-sample buffer so iOS/Safari treat the context as user-started.
+ */
+function unlockAudioFromUserGesture(ctx: AudioContext): void {
+  if (ctx.state === "running") {
+    audioUnlocked = true;
+    return;
+  }
+
+  try {
+    const buffer = ctx.createBuffer(1, 1, ctx.sampleRate);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
+  } catch {
+    /* ignore — resume alone may be enough */
+  }
+
+  void ctx.resume().then(() => markUnlocked(ctx));
+}
+
 function resumeAudioContext(ctx: AudioContext): Promise<void> {
-  if (ctx.state === "running") return Promise.resolve();
+  if (ctx.state === "running") {
+    audioUnlocked = true;
+    return Promise.resolve();
+  }
   if (!audioResumePromise) {
-    audioResumePromise = ctx.resume().catch(() => {}).finally(() => {
-      audioResumePromise = null;
-    });
+    audioResumePromise = ctx
+      .resume()
+      .then(() => markUnlocked(ctx))
+      .catch(() => {})
+      .finally(() => {
+        audioResumePromise = null;
+      });
   }
   return audioResumePromise;
 }
 
-/** Call once from a click/tap/key so later scroll sounds can play (browser policy). */
+/** Call from click / tap / key so later scroll and typewriter sounds can play. */
 export function primeAudioContext(): void {
   if (isSiteAudioMuted() || prefersReducedMotion()) return;
   const ctx = getAudioContext();
   if (!ctx) return;
-  void resumeAudioContext(ctx);
+  unlockAudioFromUserGesture(ctx);
 }
 
 function runWithAudioContext(play: (ctx: AudioContext, t0: number) => void): void {
@@ -196,12 +232,15 @@ export function playUIClickFromUserGesture(): void {
   const ctx = getAudioContext();
   if (!ctx) return;
 
+  unlockAudioFromUserGesture(ctx);
+
   if (ctx.state === "running") {
     scheduleUIClick(ctx);
     return;
   }
 
-  void resumeAudioContext(ctx).then(() => {
+  void ctx.resume().then(() => {
+    markUnlocked(ctx);
     if (ctx.state === "running") scheduleUIClick(ctx);
   });
 }

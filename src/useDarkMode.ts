@@ -9,7 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { isEeveelutionPaletteId, type EeveelutionPaletteId } from "./eeveePalette";
-import { setSiteAudioMuted } from "./siteAudioMute";
+import { loadSiteAudioMuted, setSiteAudioMuted } from "./siteAudioMute";
 import { withThemeTransition } from "./themeTransition";
 import { FloatingPokeball } from "./FloatingPokeball";
 import { GlobalClickSounds } from "./useGlobalClickSounds";
@@ -35,8 +35,8 @@ function useDarkModeState(): ThemeContextValue {
 
   useEffect(() => {
     setDarkMode(true);
-    setSiteAudioMuted(false);
-    setSiteAudioMutedState(false);
+    const muted = loadSiteAudioMuted();
+    setSiteAudioMutedState(muted);
   }, []);
 
   useEffect(() => {
