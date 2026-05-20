@@ -134,6 +134,8 @@ html.dark .spacer-middle-dots {
   justify-content: center;
 }
 
+.pokeball-open-frame,
+.pokeball-spawn-sprite,
 .spacer-pokeball-open-frame,
 .spacer-eeveelution-sprite-img {
   image-rendering: pixelated;

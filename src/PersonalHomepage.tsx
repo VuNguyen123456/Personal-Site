@@ -32,6 +32,7 @@ import { SITE_AUDIO } from "./siteAudioLevels";
 import { isSiteAudioMuted } from "./siteAudioMute";
 import { playDetypingTick, playTextDespawn, playTextSpawn, playTypingTick } from "./typingSound";
 import { useDividerIndex } from "./dividerIndex";
+import { PokeballOpenSpawn } from "./PokeballOpenSpawn";
 import { SpacerPokeballSpawn } from "./SpacerPokeballSpawn";
 import { useDarkMode, useTheme } from "./useDarkMode";
 
@@ -717,7 +718,7 @@ function StableMonoReadout({
 
   const textLineClass = reserveAfterTypingSpace ? "inline-block translate-y-1 align-middle" : "";
   const afterSlotClass = reserveAfterTypingSpace
-    ? "ml-2 inline-block shrink-0 align-middle leading-none [&_img]:block [&_img]:h-12 [&_img]:w-12 [&_img]:object-contain sm:[&_img]:h-14 sm:[&_img]:w-14"
+    ? "ml-2 inline-block shrink-0 align-middle leading-none [&_a]:block [&_.pokeball-spawn-sprite]:h-12 [&_.pokeball-spawn-sprite]:w-12 [&_.pokeball-spawn-sprite]:object-contain sm:[&_.pokeball-spawn-sprite]:h-14 sm:[&_.pokeball-spawn-sprite]:w-14 [&_.pokeball-open-frame]:h-7 [&_.pokeball-open-frame]:w-7 sm:[&_.pokeball-open-frame]:h-8 sm:[&_.pokeball-open-frame]:w-8"
     : "ml-2 inline-block shrink-0 align-top leading-none [&_img]:block [&_img]:h-12 [&_img]:w-12 [&_img]:object-contain sm:[&_img]:h-14 sm:[&_img]:w-14";
   const afterPlaceholder =
     reserveAfterTypingSpace && afterTyping != null ? (
@@ -1326,21 +1327,15 @@ function PokemonRandomHoverSprite() {
   };
 
   return (
-    <a
+    <PokeballOpenSpawn
+      spawnKey={slug}
+      spriteSrc={pokemonDbGen5AnimatedSpriteUrl(slug)}
+      spriteAlt={formatPokemonSlugForAlt(slug)}
+      size="dex"
       href={pokemonDbPokedexUrl(slug)}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-sm dark:focus-visible:ring-offset-black"
-    >
-      <img
-        src={pokemonDbGen5AnimatedSpriteUrl(slug)}
-        alt={formatPokemonSlugForAlt(slug)}
-        className="h-12 w-12 object-contain sm:h-14 sm:w-14"
-        loading="lazy"
-        decoding="async"
-        onError={onSpriteError}
-      />
-    </a>
+      linkClassName="inline-flex rounded-sm outline-none transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black"
+      onSpriteError={onSpriteError}
+    />
   );
 }
 
@@ -1719,8 +1714,13 @@ function EeveelutionBar({
   unlocked: boolean;
   onSpeciesClick?: (slug: (typeof EEVEELUTION_SPECIES)[number]) => void;
 }) {
+  const [unlockGen, setUnlockGen] = useState(0);
   const eeveeCryIndexRef = useRef(0);
   const cryAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    if (unlocked) setUnlockGen((g) => g + 1);
+  }, [unlocked]);
 
   const playEeveelutionCry = useCallback((slug: (typeof EEVEELUTION_SPECIES)[number]) => {
     if (isSiteAudioMuted()) return;
@@ -1755,31 +1755,27 @@ function EeveelutionBar({
       role="group"
       aria-label="Eeveelution line"
     >
-      {EEVEELUTION_SPECIES.map((slug, index) => (
-        <button
-          key={slug}
-          type="button"
-          onClick={unlocked ? () => handleSpeciesClick(slug) : undefined}
-          disabled={!unlocked}
-          tabIndex={unlocked ? 0 : -1}
-          className="flex h-11 w-full min-h-0 items-center justify-center overflow-hidden p-0 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white enabled:cursor-pointer enabled:hover:opacity-80 disabled:cursor-default dark:focus-visible:ring-offset-black sm:h-12 lg:h-14"
-          aria-label={unlocked ? `${eeveelutionLabel(slug)} — click to play cry` : undefined}
-          aria-hidden={!unlocked}
-        >
-          {unlocked ? (
-            <motion.img
-              key={`${slug}-sprite`}
-              src={eeveelutionSpriteUrl(slug)}
-              alt=""
-              initial={{ opacity: 0, scale: 0.88, y: 6 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: index * 0.06, ease: [0.22, 1, 0.36, 1] }}
-              className="h-full w-auto max-w-[min(100%,6.5rem)] object-contain transition-[opacity,transform] duration-200 hover:scale-105 sm:max-w-[min(100%,7rem)] lg:max-w-[min(100%,7.5rem)]"
-              decoding="async"
-            />
-          ) : null}
-        </button>
-      ))}
+      {EEVEELUTION_SPECIES.map((slug, index) =>
+        unlocked ? (
+          <PokeballOpenSpawn
+            key={slug}
+            spawnKey={`${slug}-${unlockGen}`}
+            spawnDelayMs={index * 90}
+            spriteSrc={eeveelutionSpriteUrl(slug)}
+            size="bar"
+            onClick={() => handleSpeciesClick(slug)}
+            ariaLabel={`${eeveelutionLabel(slug)} — click to play cry`}
+            className="cursor-pointer transition-[opacity,transform] duration-200 hover:scale-105 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black"
+            spriteClassName="transition-[opacity,transform] duration-200"
+          />
+        ) : (
+          <motion.div
+            key={slug}
+            className="flex h-11 w-full min-h-0 items-center justify-center overflow-hidden p-0 sm:h-12 lg:h-14"
+            aria-hidden
+          />
+        ),
+      )}
     </div>
   );
 }
