@@ -2,243 +2,183 @@ import { readFileSync, writeFileSync } from "fs";
 
 const H = 48;
 const UNIT = 1000;
-const PAD = 40;
-const COUNT = 16;
+const FLOWER_COUNT = 96;
+/** Nudge the whole meadow band downward in the divider */
+const FIELD_Y_SHIFT = 5;
 
 const C = {
-  wing: "#f291a4",
-  wingSoft: "#fbcdd2",
-  wingBlue: "#97dcfb",
-  body: "#6f82b6",
-  dot: "#f9ecde",
+  grass: "#5a9e6e",
+  grassHi: "#6bb88a",
+  grassLo: "#4a8a5c",
+  stem: "#5a9e6e",
+  stemDark: "#4a8a5c",
+  leaf: "#89d89b",
+  petal: "#f291a4",
+  petalSoft: "#fbcdd2",
+  petalPale: "#ffd4e0",
+  ribbon: "#97dcfb",
+  center: "#fff8d0",
 };
 
 function rects(cells, ox, oy, fill) {
   return cells
     .map(([x, y, w, h]) => {
-      const rw = w ?? 4;
-      const rh = h ?? 4;
+      const rw = w ?? 2;
+      const rh = h ?? 2;
       return `<rect x='${ox + x}' y='${oy + y}' width='${rw}' height='${rh}' fill='${fill}'/>`;
     })
     .join("");
 }
 
-const BUTTERFLIES = [
-  () =>
-    rects(
-      [
-        [0, 0, 8, 4],
-        [8, 0, 8, 4],
-        [-4, 4, 8, 4],
-        [4, 4, 8, 4],
-        [12, 4, 8, 4],
-        [4, 8, 4, 4],
-        [8, 8, 4, 4],
-      ],
-      0,
-      0,
-      C.wing,
-    ) +
-    rects([[6, 4, 4, 4]], 0, 0, C.body) +
-    rects([[2, 2, 4, 4]], 0, 0, C.wingSoft),
-  () =>
-    rects(
-      [
-        [4, 0],
-        [8, 0],
-        [0, 4, 12, 4],
-        [12, 4],
-        [16, 4],
-        [4, 8],
-        [8, 8],
-      ],
-      0,
-      0,
-      C.wingBlue,
-    ) +
-    rects([[6, 4, 4, 4]], 0, 0, C.body) +
-    rects([[10, 0, 4, 4]], 0, 0, C.wingSoft),
-  () =>
-    rects(
-      [
-        [0, 2, 8, 4],
-        [8, 2, 8, 4],
-        [-4, 6, 8, 4],
-        [8, 6, 8, 4],
-        [6, 0, 4, 4],
-      ],
-      0,
-      0,
-      C.wing,
-    ) +
-    rects([[4, 6, 4, 4]], 0, 0, C.body) +
-    rects([[12, 6, 4, 4]], 0, 0, C.dot),
-  () =>
-    rects(
-      [
-        [0, 0],
-        [4, 0],
-        [8, 0, 8, 4],
-        [0, 4, 4, 4],
-        [12, 4, 8, 4],
-        [4, 8, 8, 4],
-      ],
-      0,
-      0,
-      C.wingSoft,
-    ) +
-    rects([[6, 4, 4, 4]], 0, 0, C.wing) +
-    rects([[2, 4, 4, 4]], 0, 0, C.wingBlue),
-];
-
-const W = 20;
-
-function mirror(art, faceRight) {
-  if (faceRight) return art;
-  return `<g transform='scale(-1 1) translate(${-W} 0)'>${art}</g>`;
-}
-
-/** Spread value across [min, max] per butterfly index */
 function spread(i, min, max, salt = 0) {
   const span = max - min;
   return Math.round(min + ((((i * 41 + salt * 19) % 97) + 1) / 98) * span);
 }
 
-/** Midpoint along a segment, biased away from center (t in 0.12–0.88, staggered per i) */
-function along(i, x0, y0, x1, y1, salt = 0) {
-  const t = 0.12 + (((i * 29 + salt * 11) % 77) / 77) * 0.76;
-  return {
-    xm: Math.round(x0 + (x1 - x0) * t),
-    ym: Math.round(y0 + (y1 - y0) * t),
-  };
+function windTiming(id) {
+  const dur = (2.6 + (id % 7) * 0.32).toFixed(2);
+  const begin = ((id * 0.31) % 3.2).toFixed(2);
+  const dir = id % 2 === 0 ? 1 : -1;
+  const sway = (1.5 + (id % 4) * 0.6).toFixed(1);
+  const drift = 1 + (id % 2);
+  return { dur, begin, dir, sway, drift };
 }
 
-/** 3-point paths — required when keyTimes has 0;0.5;1 (2 points breaks SMIL in bg SVG) */
-function flyPath(i) {
-  const dur = (5.5 + (i % 9) * 0.5).toFixed(2);
-  const begin = ((i * 0.45) % 7).toFixed(2);
-  const type = i % 8;
-  const yLane = spread(i, 2, H - 14, 1);
-  const xLane = spread(i, 40, UNIT - 40, 2);
-  const drift = ((i % 5) - 2) * 6;
-  const spline =
-    "calcMode='spline' keyTimes='0;0.5;1' keySplines='0.35 0 0.65 1;0.35 0 0.65 1'";
+function windSway(id) {
+  const { dur, begin, dir, sway, drift } = windTiming(id);
+  const a = (dir * sway).toFixed(1);
+  const b = (-dir * sway * 0.5).toFixed(1);
+  const dx1 = dir * drift;
+  const dx2 = -dir * Math.max(1, drift - 1);
+  return (
+    `<animateTransform attributeName='transform' type='rotate' values='0;${a};${b};0' ` +
+    `dur='${dur}s' begin='${begin}s' repeatCount='indefinite' keyTimes='0;.35;.7;1' ` +
+    `calcMode='spline' keySplines='0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1'/>` +
+    `<animateTransform attributeName='transform' additive='sum' type='translate' values='0 0;${dx1} ${dir > 0 ? -1 : 1};${dx2} 0;0 0' ` +
+    `dur='${dur}s' begin='${begin}s' repeatCount='indefinite' keyTimes='0;.4;.75;1' ` +
+    `calcMode='spline' keySplines='0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1'/>`
+  );
+}
 
-  let x0;
-  let y0;
-  let xm;
-  let ym;
-  let x1;
-  let y1;
-  let faceRight = true;
-  let mid;
-
-  switch (type) {
-    case 0:
-      x0 = -PAD;
-      y0 = yLane;
-      x1 = UNIT + PAD;
-      y1 = yLane + drift;
-      xm = spread(i, 60, UNIT - 60, 3);
-      ym = spread(i, 0, H - 12, 4);
-      faceRight = true;
-      break;
-    case 1:
-      x0 = UNIT + PAD;
-      y0 = yLane;
-      x1 = -PAD;
-      y1 = yLane - drift;
-      xm = spread(i, 60, UNIT - 60, 5);
-      ym = spread(i, 0, H - 12, 6);
-      faceRight = false;
-      break;
-    case 2:
-      x0 = xLane;
-      y0 = -PAD;
-      x1 = xLane + drift;
-      y1 = H + PAD;
-      xm = x0 + Math.round(drift / 2);
-      ym = spread(i, 4, H - 4, 7);
-      faceRight = drift >= 0;
-      break;
-    case 3:
-      x0 = xLane;
-      y0 = H + PAD;
-      x1 = xLane - drift;
-      y1 = -PAD;
-      xm = x0 - Math.round(drift / 2);
-      ym = spread(i, 4, H - 4, 8);
-      faceRight = drift < 0;
-      break;
-    case 4:
-      x0 = -PAD;
-      y0 = -PAD;
-      x1 = UNIT + PAD;
-      y1 = H + PAD;
-      mid = along(i, x0, y0, x1, y1, 0);
-      xm = mid.xm;
-      ym = mid.ym;
-      faceRight = true;
-      break;
-    case 5:
-      x0 = UNIT + PAD;
-      y0 = H + PAD;
-      x1 = -PAD;
-      y1 = -PAD;
-      mid = along(i, x0, y0, x1, y1, 1);
-      xm = mid.xm;
-      ym = mid.ym;
-      faceRight = false;
-      break;
-    case 6:
-      x0 = UNIT + PAD;
-      y0 = -PAD;
-      x1 = -PAD;
-      y1 = H + PAD;
-      mid = along(i, x0, y0, x1, y1, 2);
-      xm = mid.xm;
-      ym = mid.ym;
-      faceRight = false;
-      break;
-    default:
-      x0 = -PAD;
-      y0 = H + PAD;
-      x1 = UNIT + PAD;
-      y1 = -PAD;
-      mid = along(i, x0, y0, x1, y1, 3);
-      xm = mid.xm;
-      ym = mid.ym;
-      faceRight = true;
-      break;
+/** Grass tufts along the ground */
+function grassBed() {
+  let out = "";
+  for (let x = 0; x < UNIT; x += 4) {
+    const n = Math.floor(x / 4) % 5;
+    const fill = n === 0 ? C.grassLo : n === 2 ? C.grassHi : C.grass;
+    out += rects([[0, 0, 2, 2]], x, H - 4, fill);
+    if (n % 2 === 0) {
+      out += rects([[2, -2, 2, 2]], x, H - 4, C.grassHi);
+    }
   }
-
-  const values = `${x0} ${y0};${xm} ${ym};${x1} ${y1}`;
-  return {
-    dur,
-    begin,
-    faceRight,
-    anim: `<animateTransform attributeName='transform' type='translate' values='${values}' dur='${dur}s' begin='${begin}s' repeatCount='indefinite' ${spline}/>`,
-  };
+  return out;
 }
 
-function wingFlap(i) {
-  const dur = (0.5 + (i % 4) * 0.07).toFixed(2);
-  const begin = ((i * 0.13) % 0.9).toFixed(2);
-  const tilt = i % 2 === 0 ? 4 : -4;
-  return `<animateTransform attributeName='transform' type='rotate' values='0;${tilt};0;${-tilt};0' dur='${dur}s' begin='${begin}s' repeatCount='indefinite' keyTimes='0;0.25;0.5;0.75;1'/>`;
+function flowerBody(variant) {
+  const stem = rects([[2, 6, 2, 6], [0, 10, 2, 4]], 0, 0, C.stem);
+  const leaf = rects([[0, 8, 4, 2], [4, 10, 4, 2]], 0, 0, C.leaf);
+
+  if (variant === 0) {
+    return (
+      stem +
+      leaf +
+      rects(
+        [
+          [0, 2, 2, 2],
+          [4, 2, 2, 2],
+          [2, 0, 2, 2],
+          [0, 4, 2, 2],
+          [4, 4, 2, 2],
+        ],
+        0,
+        0,
+        C.petal,
+      ) +
+      rects([[2, 2, 2, 2]], 0, 0, C.center)
+    );
+  }
+  if (variant === 1) {
+    return (
+      stem +
+      rects(
+        [
+          [1, 0, 4, 2],
+          [0, 2, 2, 2],
+          [5, 2, 2, 2],
+          [2, 4, 2, 2],
+        ],
+        0,
+        0,
+        C.petalSoft,
+      ) +
+      rects([[2, 2, 2, 2]], 0, 0, C.center) +
+      rects([[5, 8, 3, 2]], 0, 0, C.leaf)
+    );
+  }
+  if (variant === 2) {
+    return (
+      rects([[2, 8, 2, 8]], 0, 0, C.stemDark) +
+      rects(
+        [
+          [1, 4, 2, 2],
+          [3, 4, 2, 2],
+          [2, 2, 2, 2],
+        ],
+        0,
+        0,
+        C.petalPale,
+      ) +
+      rects([[2, 4, 2, 2]], 0, 0, C.center)
+    );
+  }
+  return (
+    stem +
+    rects(
+      [
+        [0, 1, 2, 2],
+        [4, 1, 2, 2],
+        [2, 2, 2, 2],
+        [1, 4, 2, 2],
+        [3, 4, 2, 2],
+      ],
+      0,
+      0,
+      C.petal,
+    ) +
+    rects([[2, 2, 2, 2]], 0, 0, C.center) +
+    rects([[6, 3, 2, 2]], 0, 0, C.ribbon)
+  );
 }
 
-function butterfly(i) {
-  const art = BUTTERFLIES[i % BUTTERFLIES.length]();
-  const { anim, faceRight } = flyPath(i);
-  const body = mirror(art, faceRight);
-  const op = (0.82 + (i % 4) * 0.04).toFixed(2);
-  return `<g opacity='${op}'>${anim}<g>${wingFlap(i)}${body}</g></g>`;
+const PIVOT = { x: 3, y: 14 };
+
+function swayingFlower(x, y, variant, id) {
+  const body = flowerBody(variant);
+  const { x: px, y: py } = PIVOT;
+  return (
+    `<g transform='translate(${x} ${y})'>` +
+    `<g transform='translate(${px} ${py})'>${windSway(id)}` +
+    `<g transform='translate(${-px} ${-py})'>${body}</g></g></g>`
+  );
+}
+
+function flowerField() {
+  const flowers = [];
+  for (let i = 0; i < FLOWER_COUNT; i++) {
+    const baseX = 4 + Math.floor((i * (UNIT - 12)) / FLOWER_COUNT);
+    const x = baseX + spread(i, -3, 3, 10);
+    const y = spread(i, 12, H - 18, 11) + (i % 5) - 2 + FIELD_Y_SHIFT;
+    flowers.push(swayingFlower(x, y, i % 4, i));
+  }
+  return flowers.join("");
 }
 
 function buildSvg() {
-  const bugs = Array.from({ length: COUNT }, (_, i) => butterfly(i)).join("");
-  return `<svg xmlns='http://www.w3.org/2000/svg' width='${UNIT}' height='${H}' viewBox='0 0 ${UNIT} ${H}' preserveAspectRatio='none' overflow='visible' shape-rendering='crispEdges'>${bugs}</svg>`;
+  return (
+    `<svg xmlns='http://www.w3.org/2000/svg' width='${UNIT}' height='${H}' ` +
+    `viewBox='0 0 ${UNIT} ${H}' preserveAspectRatio='none' overflow='visible' ` +
+    `shape-rendering='crispEdges'>${grassBed()}${flowerField()}</svg>`
+  );
 }
 
 function enc(svg) {
@@ -247,7 +187,7 @@ function enc(svg) {
 
 const tileEnc = enc(buildSvg());
 
-const css = `/* Sylveon — butterflies crossing the divider in many directions */
+const css = `/* Sylveon — flower field swaying in the wind */
 html[data-palette="sylveon"] .section-diagonal-gap--crawl-ltr,
 html[data-palette="sylveon"] .section-diagonal-gap--crawl-rtl {
   image-rendering: pixelated;
@@ -269,4 +209,4 @@ const mainPath = "src/eeveelution-dividers.css";
 const main = readFileSync(mainPath, "utf8");
 const s = main.indexOf("/* Sylveon");
 writeFileSync(mainPath, main.slice(0, s) + css.trim() + "\n");
-console.log("done —", COUNT, "Sylveon butterflies, full width");
+console.log("done —", FLOWER_COUNT, "Sylveon flowers, wind sway");
