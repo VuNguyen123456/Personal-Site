@@ -27,6 +27,12 @@ import {
   type SpacerPokemonStatLine,
 } from "./pokeApi";
 import { pickRandomPokemonDbSlug, pokemonDbGen5AnimatedSpriteUrl, pokemonDbPokedexUrl } from "./pokemonDbSlugs";
+import {
+  pokemonShowdownCryUrl,
+  playPokemonShowdownCry,
+  cancelPokemonShowdownCry,
+  SHOWDOWN_CRY_BASE,
+} from "./pokemonShowdownCry";
 import { techStackSections, type TechStackItem } from "./techStackData";
 import { SITE_AUDIO } from "./siteAudioLevels";
 import { isSiteAudioMuted } from "./siteAudioMute";
@@ -1318,6 +1324,12 @@ function PokemonRandomHoverSprite() {
   const [slug, setSlug] = useState(() => pickRandomPokemonDbSlug());
   const errorRolls = useRef(0);
 
+  /** Same timing as Eeveelution bar: cry from spawn start, not after onRevealComplete. */
+  useEffect(() => {
+    playPokemonShowdownCry(slug, { delayMs: pokeballCryDelayMs() });
+    return () => cancelPokemonShowdownCry();
+  }, [slug]);
+
   const onSpriteError = () => {
     errorRolls.current += 1;
     /** Older animated BW sprites are missing for many Gen 9+ species; re-roll instead of always Pikachu. */
@@ -1705,13 +1717,10 @@ function eeveelutionLabel(slug: string) {
   return slug.charAt(0).toUpperCase() + slug.slice(1);
 }
 
-const SHOWDOWN_CRY_BASE = "https://play.pokemonshowdown.com/audio/cries";
-
-function eeveelutionCryUrl(slug: string) {
-  return `${SHOWDOWN_CRY_BASE}/${slug}.mp3`;
-}
-
-const EEVEE_CRIES = [eeveelutionCryUrl("eevee"), `${SHOWDOWN_CRY_BASE}/eevee-starter.mp3`] as const;
+const EEVEE_CRIES = [
+  pokemonShowdownCryUrl("eevee"),
+  `${SHOWDOWN_CRY_BASE}/eevee-starter.mp3`,
+] as const;
 
 function EeveelutionBar({
   unlocked,
@@ -1765,7 +1774,7 @@ function EeveelutionBar({
       const url =
         slug === "eevee"
           ? EEVEE_CRIES[eeveeCryIndexRef.current]
-          : eeveelutionCryUrl(slug);
+          : pokemonShowdownCryUrl(slug);
       if (slug === "eevee") {
         eeveeCryIndexRef.current = (eeveeCryIndexRef.current + 1) % EEVEE_CRIES.length;
       }
