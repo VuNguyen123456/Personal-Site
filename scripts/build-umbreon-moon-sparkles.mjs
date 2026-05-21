@@ -1,381 +1,249 @@
 import { readFileSync, writeFileSync } from "fs";
 
-const S = 4;
-/** Taller tile so cover crop does not flatten the oval top/bottom */
-const H = 64;
-const UNIT = 1000;
-const CX = UNIT / 2;
+/** Divider strip: 48px tall, full viewport width. Keep square pixels via slice (not stretch). */
+const H = 48;
+const W = 1000;
+const PX = 4;
+const CX = W / 2;
 const CY = H / 2;
+const MOON_KEEP = 22;
 
 const C = {
   void: "#050810",
+  voidDeep: "#03050c",
   voidSoft: "#0a0e2b",
-  moonDark: "#b8b4c8",
-  moonDim: "#ccc8d8",
-  moonGrey: "#dcd8e8",
-  moonLight: "#ebe8f4",
-  moonPale: "#f4f2fa",
-  moonWhite: "#fffef8",
+  moonShadow: "#9a96a8",
+  moonBase: "#c4c0d2",
+  moonLit: "#dad6ea",
+  moonBright: "#ebe8f4",
+  moonPeak: "#f4f2f8",
+  moonRim: "#706c7c",
   starWhite: "#fffef8",
   starGold: "#f5d76e",
-  starGoldSoft: "#e8c04a",
-  starBlue: "#b8d4f0",
-  starPink: "#f0c8e8",
-  starLavender: "#d8d0f8",
-  fieldStar: "#1a1408",
-  fieldStarSoft: "#2e2818",
-  fieldStarWarm: "#241c10",
-  fieldStarGlow: "#5a4520",
+  starGoldSoft: "#d4b04a",
+  starBlue: "#a8c8e8",
+  starPink: "#e8b0d8",
 };
 
-/** ~20×20px disc: row widths 3-5-5-5-3 — mottled fills, not a clean gradient */
-const MOON_CELLS = [
-  [-1, -2, C.moonDim],
-  [0, -2, C.moonPale],
-  [1, -2, C.moonGrey],
-  [-2, -1, C.moonDark],
-  [-1, -1, C.moonGrey],
-  [0, -1, C.moonLight],
-  [1, -1, C.moonDim],
-  [2, -1, C.moonDark],
-  [-2, 0, C.moonDim],
-  [-1, 0, C.moonGrey],
-  [0, 0, C.moonPale],
-  [1, 0, C.moonGrey],
-  [2, 0, C.moonDim],
-  [-2, 1, C.moonDark],
-  [-1, 1, C.moonDim],
-  [0, 1, C.moonGrey],
-  [1, 1, C.moonLight],
-  [2, 1, C.moonDim],
-  [-1, 2, C.moonGrey],
-  [0, 2, C.moonDark],
-  [1, 2, C.moonDim],
+const TWINKLE =
+  "calcMode='spline' keyTimes='0;0.5;1' keySplines='0.42 0 0.58 1;0.42 0 0.58 1'";
+
+/** ~5×5 smooth circle: body (d²≤5) + edge band (d²≤8) + soft rim (d² 9–11). */
+function moonDist2(dx, dy) {
+  return dx * dx + dy * dy;
+}
+
+/** Gentle top-left light only — no per-cell blotches. */
+function moonBodyFill(dx, dy, d2) {
+  const lit = -dx * 0.45 - dy * 0.55;
+  if (d2 <= 2) return lit > 0.3 ? C.moonPeak : C.moonBright;
+  if (d2 <= 4) return lit > -0.2 ? C.moonBright : C.moonLit;
+  if (d2 <= 5) return lit > 0 ? C.moonLit : C.moonBase;
+  return C.moonBase;
+}
+
+const MOON = [];
+const MOON_SOFT = [];
+
+for (let dy = -2; dy <= 2; dy++) {
+  for (let dx = -2; dx <= 2; dx++) {
+    const d2 = moonDist2(dx, dy);
+    if (d2 <= 5) {
+      MOON.push([dx, dy, moonBodyFill(dx, dy, d2)]);
+    } else if (d2 <= 8) {
+      MOON.push([dx, dy, d2 <= 7 ? C.moonShadow : C.moonRim]);
+    }
+  }
+}
+
+for (let dy = -3; dy <= 3; dy++) {
+  for (let dx = -3; dx <= 3; dx++) {
+    const d2 = moonDist2(dx, dy);
+    if (d2 >= 9 && d2 <= 11) {
+      MOON_SOFT.push([dx, dy]);
+    }
+  }
+}
+
+/** Two soft craters + one highlight fleck. */
+const CRATER_PITS = [
+  [0, -1, 2, 2, 2, 2, C.moonShadow],
+  [-1, 0, 2, 2, 2, 2, C.moonShadow],
 ];
 
-/** 2×2 crater dimples on the face (ox, oy within each 4×4 cell) */
-const MOON_CRATERS = [
-  [0, -1, 2, 1],
-  [-1, 0, 0, 2],
-  [1, 0, 1, 3],
-  [0, 1, 2, 0],
-  [-2, 1, 2, 2],
-  [2, -1, 0, 1],
-];
+const HIGHLIGHTS = [[0, -1, 1, 1, C.moonPeak]];
 
-/** Place moon so its bbox center matches divider center (CX, CY) */
-function moonBBoxMid(cells) {
-  let minDx = Infinity;
-  let maxDx = -Infinity;
-  let minDy = Infinity;
-  let maxDy = -Infinity;
-  for (const [dx, dy] of cells) {
-    minDx = Math.min(minDx, dx);
-    maxDx = Math.max(maxDx, dx);
-    minDy = Math.min(minDy, dy);
-    maxDy = Math.max(maxDy, dy);
+function moonAnchor() {
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  const all = [...MOON.map(([dx, dy]) => [dx, dy]), ...MOON_SOFT];
+  for (const [dx, dy] of all) {
+    minX = Math.min(minX, dx);
+    maxX = Math.max(maxX, dx);
+    minY = Math.min(minY, dy);
+    maxY = Math.max(maxY, dy);
   }
   return {
-    midDx: (minDx + maxDx + 1) / 2,
-    midDy: (minDy + maxDy + 1) / 2,
+    ox: CX - ((minX + maxX + 1) / 2) * PX,
+    oy: CY - ((minY + maxY + 1) / 2) * PX,
   };
 }
 
-const { midDx: MOON_MID_DX, midDy: MOON_MID_DY } = moonBBoxMid(MOON_CELLS);
-const MOON_OX = CX - MOON_MID_DX * S;
-const MOON_OY = CY - MOON_MID_DY * S;
+const MOON_POS = moonAnchor();
 
-/** Compact night oval — ~90% at dim; shorter vertically so it stays oval under cover */
-const SKY_DX_MAX = 12;
-const SKY_DY_MAX = 4;
-const SKY_R_MIN = 0.9;
-const SKY_R_MAX = 1;
-const SKY_FS = 2;
-const SKY_WAVE_SPREAD = 0.94;
-const SKY_EDGE_RAMP = 0.018;
-
-/** Shared slow breathe — glow opacity + sky stretch (snap expand & shrink) */
-const BREATHE_DUR = "5.5s";
-const BREATHE_SPLINE =
-  "calcMode='spline' keyTimes='0;0.5;1' keySplines='0.42 0 0.58 1;0.42 0 0.58 1'";
-
-function skyNormDist(dx, dy) {
-  return Math.hypot(dx / SKY_DX_MAX, dy / SKY_DY_MAX);
+function rnd(i, salt, min, max) {
+  const n = ((i * 7919 + salt * 104729) >>> 0) % 10007;
+  return min + (n % (max - min + 1));
 }
 
-/** 0 = inside min patch (always on); 1 = outer edge at peak glow */
-function skyRevealK(d) {
-  return (d - SKY_R_MIN) / (SKY_R_MAX - SKY_R_MIN);
+function nearMoon(x, y) {
+  return Math.hypot(x - CX, y - CY) < MOON_KEEP;
 }
 
-function skyWavePhase(k, normDx, normDy) {
-  const dist = Math.min(k, 0.99);
-  const jitter = ((Math.atan2(normDy, normDx) / Math.PI + 1) * 0.004);
-  const hash = ((((normDx * 17 + normDy * 29) % 1) + 1) % 1) * 0.008;
-  return Math.min(dist ** 0.65 + jitter + hash, 0.998);
-}
-
-/** Soft wave on thin rim — inside-out expand, outside-in shrink */
-function skyRevealAnim(k, onOpacity = "1", normDx = 0, normDy = 0) {
-  if (k <= 0) return "";
-  const phase = skyWavePhase(k, normDx, normDy);
-  const half = 0.5 * SKY_WAVE_SPREAD;
-  const tIn = half * phase;
-  const tOut = 1 - half * phase;
-  const tIn0 = Math.max(0, tIn - SKY_EDGE_RAMP).toFixed(4);
-  const tIn1 = tIn.toFixed(4);
-  const tOut0 = tOut.toFixed(4);
-  const tOut1 = Math.min(1, tOut + SKY_EDGE_RAMP).toFixed(4);
-  return (
-    `<animate attributeName='opacity' values='0;0;${onOpacity};${onOpacity};0;0' ` +
-    `keyTimes='0;${tIn0};${tIn1};${tOut0};${tOut1};1' dur='${BREATHE_DUR}' repeatCount='indefinite' calcMode='linear'/>`
-  );
-}
-
-function nightBackdropCells() {
-  const parts = [];
-  const halfX = SKY_DX_MAX * S;
-  const halfY = SKY_DY_MAX * S;
-  for (let ox = -halfX; ox < halfX; ox += SKY_FS) {
-    for (let oy = -halfY; oy < halfY; oy += SKY_FS) {
-      const dx = (ox + SKY_FS / 2) / S;
-      const dy = (oy + SKY_FS / 2) / S;
-      const d = skyNormDist(dx, dy);
-      if (d > SKY_R_MAX) continue;
-      const x = CX + ox;
-      const y = CY + oy;
-      const k = skyRevealK(d);
-      const fill = d < 0.44 ? C.void : C.voidSoft;
-      const anim = skyRevealAnim(k, "1", dx, dy);
-      if (!anim) {
-        parts.push(
-          `<rect x='${x}' y='${y}' width='${SKY_FS}' height='${SKY_FS}' fill='${fill}'/>`,
-        );
-        continue;
-      }
-      parts.push(
-        `<rect x='${x}' y='${y}' width='${SKY_FS}' height='${SKY_FS}' fill='${fill}' opacity='0'>${anim}</rect>`,
-      );
+function nightSky() {
+  let s = `<rect x='0' y='0' width='${W}' height='${H}' fill='${C.void}'/>`;
+  for (let y = 0; y < H; y += 4) {
+    for (let x = 0; x < W; x += 4) {
+      const i = x / 4 + (y / 4) * (W / 4);
+      if (rnd(i, 1, 0, 5) !== 0) continue;
+      if (nearMoon(x + 2, y + 2, 0)) continue;
+      s += `<rect x='${x}' y='${y}' width='2' height='2' fill='${rnd(i, 2, 0, 1) ? C.voidSoft : C.voidDeep}'/>`;
     }
   }
-  return parts.join("");
+  return s;
 }
 
-/** Mostly white; occasional gold + soft accent tints */
 function starColor(i) {
-  const roll = (i * 17 + 5) % 100;
-  if (roll < 70) return C.starWhite;
-  if (roll < 86) return i % 2 === 0 ? C.starGold : C.starGoldSoft;
-  if (roll < 92) return C.starBlue;
-  if (roll < 96) return C.starPink;
-  return C.starLavender;
+  const r = rnd(i, 5, 0, 99);
+  if (r < 65) return C.starWhite;
+  if (r < 82) return r % 2 ? C.starGold : C.starGoldSoft;
+  if (r < 92) return C.starBlue;
+  return C.starPink;
 }
 
-function starSparkleAnim(i, baseOp) {
-  const dur = (2.4 + (i % 7) * 0.3).toFixed(2);
-  const begin = ((i * 0.19) % 2.8).toFixed(2);
-  const lo = (Number(baseOp) * 0.3).toFixed(2);
-  const hi = baseOp;
+function twinkle(i, peak) {
+  const dur = (2 + (rnd(i, 3, 0, 40) / 20)).toFixed(2);
+  const begin = (rnd(i, 4, 0, 280) / 100).toFixed(2);
+  const lo = (peak * 0.12).toFixed(2);
+  const hi = peak.toFixed(2);
   return (
-    `<animate attributeName='opacity' values='${lo};${hi};${lo}' dur='${dur}s' begin='${begin}s' ` +
-    `repeatCount='indefinite' calcMode='spline' keyTimes='0;0.5;1' keySplines='0.42 0 0.58 1;0.42 0 0.58 1'/>`
+    `<animate attributeName='opacity' values='${lo};${hi};${lo}' dur='${dur}s' ` +
+    `begin='${begin}s' repeatCount='indefinite' ${TWINKLE}/>`
   );
 }
 
-function nightStarsCells() {
-  const parts = [];
-  for (let i = 0; i < 44; i++) {
-    const dx = ((i * 11 + 3) % 25) - 12;
-    const dy = ((i * 7 + 2) % 13) - 6;
-    const d = skyNormDist(dx, dy);
-    if (d > SKY_R_MAX - 0.04) continue;
-    const x = CX + dx * S + (i % 3 === 0 ? 1 : 0);
-    const y = CY + dy * S + (i % 2);
-    const op = (0.55 + (i % 4) * 0.12).toFixed(2);
-    const k = skyRevealK(d);
-    const reveal = skyRevealAnim(k, "1", dx, dy);
-    const twinkle = starSparkleAnim(i, op);
-    const fill = starColor(i);
-    const star =
-      i % 5 === 0
-        ? `<rect x='${x}' y='${y - 1}' width='1' height='3' fill='${fill}'/>` +
-          `<rect x='${x - 1}' y='${y}' width='3' height='1' fill='${fill}'/>`
-        : `<rect x='${x}' y='${y}' width='1' height='1' fill='${fill}'/>`;
-    if (!reveal) {
-      parts.push(`<g opacity='${op}'>${star}${twinkle}</g>`);
-      continue;
-    }
-    parts.push(`<g opacity='0'>${reveal}<g opacity='${op}'>${star}${twinkle}</g></g>`);
+function starGfx(x, y, kind, fill) {
+  if (kind === 1) {
+    return (
+      `<rect x='${x}' y='${y - 1}' width='1' height='3' fill='${fill}'/>` +
+      `<rect x='${x - 1}' y='${y}' width='3' height='1' fill='${fill}'/>`
+    );
   }
-  return parts.join("");
+  if (kind === 2) {
+    return (
+      `<rect x='${x}' y='${y}' width='2' height='2' fill='${fill}' opacity='0.9'/>` +
+      `<rect x='${x}' y='${y - 1}' width='2' height='1' fill='${fill}' opacity='0.45'/>`
+    );
+  }
+  return `<rect x='${x}' y='${y}' width='1' height='1' fill='${fill}'/>`;
 }
 
-function nightSkyPatch() {
-  return nightBackdropCells() + nightStarsCells();
-}
-
-function fieldStarColor(i) {
-  const roll = (i * 23 + 9) % 100;
-  if (roll < 75) return C.fieldStar;
-  if (roll < 90) return C.fieldStarSoft;
-  return C.fieldStarWarm;
-}
-
-function fieldStarSparkleAnim(i, baseOp) {
-  const dur = (3.1 + (i % 6) * 0.35).toFixed(2);
-  const begin = ((i * 0.21) % 3.2).toFixed(2);
-  const lo = (Number(baseOp) * 0.2).toFixed(2);
-  const hi = baseOp;
-  return (
-    `<animate attributeName='opacity' values='${lo};${hi};${lo}' dur='${dur}s' begin='${begin}s' ` +
-    `repeatCount='indefinite' calcMode='spline' keyTimes='0;0.5;1' keySplines='0.42 0 0.58 1;0.42 0 0.58 1'/>`
-  );
-}
-
-/** Soft warm halo — ~1 in 4 field stars */
-function fieldStarGlowAnim(i) {
-  const dur = (3.1 + (i % 6) * 0.35).toFixed(2);
-  const begin = ((i * 0.21) % 3.2).toFixed(2);
-  return (
-    `<animate attributeName='opacity' values='0.06;0.38;0.06' dur='${dur}s' begin='${begin}s' ` +
-    `repeatCount='indefinite' calcMode='spline' keyTimes='0;0.5;1' keySplines='0.42 0 0.58 1;0.42 0 0.58 1'/>`
-  );
-}
-
-/** Dark pinpricks on the yellow divider — outside the night oval */
-function fieldStarsCells() {
-  const parts = [];
+function stars() {
+  const used = new Set();
+  const out = [];
   let n = 0;
-  for (let i = 0; n < 56 && i < 200; i++) {
-    let px;
-    let py;
-    const band = i % 3;
-    if (band === 0) {
-      const side = i % 2 === 0 ? -1 : 1;
-      px = CX + side * (58 + ((i * 37 + 17) % 430));
-      py = CY + (((i * 19 + 3) % 27) - 13);
-    } else if (band === 1) {
-      px = 20 + ((i * 41 + 11) % (UNIT - 40));
-      py = CY + (((i * 11 + 7) % 23) - 11);
-    } else {
-      px = CX + (((i * 13 + 5) % 34) - 17);
-      py = CY + (((i * 9 + 2) % 20) - 10);
-    }
-    const dx = (px - CX) / S;
-    const dy = (py - CY) / S;
-    if (skyNormDist(dx, dy) <= SKY_R_MAX + 0.05) continue;
-    if (Math.abs(px - CX) < 28 && Math.abs(py - CY) < 16) continue;
-
-    const x = Math.round(px);
-    const y = Math.round(py);
-    const op = (0.5 + (n % 5) * 0.1).toFixed(2);
-    const fill = fieldStarColor(n);
-    const twinkle = fieldStarSparkleAnim(n, op);
-    const star =
-      n % 7 === 0
-        ? `<rect x='${x}' y='${y - 1}' width='1' height='3' fill='${fill}'/>` +
-          `<rect x='${x - 1}' y='${y}' width='3' height='1' fill='${fill}'/>`
-        : `<rect x='${x}' y='${y}' width='1' height='1' fill='${fill}'/>`;
-    if (n % 4 === 0) {
-      const glow = `<rect x='${x - 1}' y='${y - 1}' width='3' height='3' fill='${C.fieldStarGlow}' opacity='0'>${fieldStarGlowAnim(n)}</rect>`;
-      parts.push(`<g>${glow}<g opacity='${op}'>${star}${twinkle}</g></g>`);
-    } else {
-      parts.push(`<g opacity='${op}'>${star}${twinkle}</g>`);
-    }
+  for (let slot = 0; n < 90 && slot < 500; slot++) {
+    const x = rnd(slot, 10, 3, W - 4);
+    const y = rnd(slot, 11, 3, H - 4);
+    const key = `${x >> 2},${y >> 2}`;
+    if (used.has(key) || nearMoon(x, y)) continue;
+    used.add(key);
     n++;
+    const peak = 0.45 + rnd(n, 12, 0, 50) / 100;
+    const kind = rnd(n, 13, 0, 2);
+    out.push(
+      `<g opacity='${peak.toFixed(2)}'>${starGfx(x, y, kind, starColor(n))}${twinkle(n, peak)}</g>`,
+    );
   }
-  return parts.join("");
+  return out.join("");
 }
 
-function moonPixels() {
-  return MOON_CELLS.map(([dx, dy, fill]) => {
-    const x = MOON_OX + dx * S;
-    const y = MOON_OY + dy * S;
-    return `<rect x='${x}' y='${y}' width='${S}' height='${S}' fill='${fill}'/>`;
-  }).join("");
-}
-
-function moonCraters() {
-  return MOON_CRATERS.map(([dx, dy, ox, oy]) => {
-    const x = MOON_OX + dx * S + ox;
-    const y = MOON_OY + dy * S + oy;
-    return `<rect x='${x}' y='${y}' width='2' height='2' fill='${C.moonDark}'/>`;
-  }).join("");
-}
-
-/** Soft bright flecks (not uniform shine) */
-function moonFlecks() {
-  const flecks = [
-    [1, -2, 1, 1],
-    [-1, -1, 3, 0],
-    [0, 0, 0, 1],
-    [2, 0, 1, 2],
-  ];
-  return flecks
-    .map(([dx, dy, ox, oy]) => {
-      const x = MOON_OX + dx * S + ox;
-      const y = MOON_OY + dy * S + oy;
-      return `<rect x='${x}' y='${y}' width='1' height='1' fill='${C.moonWhite}' opacity='0.7'/>`;
-    })
-    .join("");
-}
-
-/** Radiating white glow — multi-layer blur + soft pulse (flickering light) */
-function moonOutlineGlow() {
-  const keys = new Set(MOON_CELLS.map(([dx, dy]) => `${dx},${dy}`));
+function moonGlow() {
+  const keySet = new Set([
+    ...MOON.map(([dx, dy]) => `${dx},${dy}`),
+    ...MOON_SOFT.map(([dx, dy]) => `${dx},${dy}`),
+  ]);
+  const ring = [];
   const seen = new Set();
-  const parts = [];
 
-  for (const [dx, dy] of MOON_CELLS.map(([x, y]) => [x, y])) {
-    const x = MOON_OX + dx * S;
-    const y = MOON_OY + dy * S;
+  for (const [dx, dy] of [
+    ...MOON.map(([x, y]) => [x, y]),
+    ...MOON_SOFT.map(([x, y]) => [x, y]),
+  ]) {
+    const bx = MOON_POS.ox + dx * PX;
+    const by = MOON_POS.oy + dy * PX;
     const edges = [
-      [`${dx},${dy - 1}`, x, y - 1, S, 1],
-      [`${dx},${dy + 1}`, x, y + S, S, 1],
-      [`${dx - 1},${dy}`, x - 1, y, 1, S],
-      [`${dx + 1},${dy}`, x + S, y, 1, S],
+      [`${dx},${dy - 1}`, bx, by - 1, PX, 1],
+      [`${dx},${dy + 1}`, bx, by + PX, PX, 1],
+      [`${dx - 1},${dy}`, bx - 1, by, 1, PX],
+      [`${dx + 1},${dy}`, bx + PX, by, 1, PX],
     ];
-    for (const [nKey, ox, oy, w, h] of edges) {
-      if (keys.has(nKey)) continue;
-      const id = `${ox},${oy},${w},${h}`;
+    for (const [nk, x, y, w, h] of edges) {
+      if (keySet.has(nk)) continue;
+      const id = `${x},${y}`;
       if (seen.has(id)) continue;
       seen.add(id);
-      parts.push(`<rect x='${ox}' y='${oy}' width='${w}' height='${h}' fill='${C.moonWhite}'/>`);
+      ring.push(`<rect x='${x}' y='${y}' width='${w}' height='${h}' fill='${C.moonPeak}'/>`);
     }
   }
 
-  const ring = parts.join("");
-  const layer = (filterId, opacity) =>
-    `<g filter='url(#${filterId})' opacity='${opacity}'>${ring}</g>`;
-
-  const flicker = `<animate attributeName='opacity' values='0.22;1;0.22' dur='${BREATHE_DUR}' repeatCount='indefinite' ${BREATHE_SPLINE}/>`;
+  const r = ring.join("");
+  const pulse =
+    `<animate attributeName='opacity' values='0.35;0.9;0.35' dur='5.5s' repeatCount='indefinite' ${TWINKLE}/>`;
 
   return (
     `<defs>` +
-    `<filter id='uml-near' x='-90%' y='-90%' width='280%' height='280%'>` +
-    `<feMorphology operator='dilate' radius='1' in='SourceGraphic' result='m'/><feGaussianBlur in='m' stdDeviation='2.5'/>` +
+    `<filter id='um-glow' x='-100%' y='-100%' width='300%' height='300%'>` +
+    `<feMorphology operator='dilate' radius='1.2' in='SourceGraphic' result='d'/><feGaussianBlur in='d' stdDeviation='3.5'/>` +
     `</filter>` +
-    `<filter id='uml-mid' x='-130%' y='-130%' width='360%' height='360%'>` +
-    `<feMorphology operator='dilate' radius='2' in='SourceGraphic' result='m'/><feGaussianBlur in='m' stdDeviation='5.5'/>` +
-    `</filter>` +
-    `<filter id='uml-far' x='-170%' y='-170%' width='440%' height='440%'>` +
-    `<feMorphology operator='dilate' radius='3' in='SourceGraphic' result='m'/><feGaussianBlur in='m' stdDeviation='9'/>` +
-    `</filter>` +
-    `<filter id='uml-haze' x='-220%' y='-220%' width='540%' height='540%'>` +
-    `<feMorphology operator='dilate' radius='4' in='SourceGraphic' result='m'/><feGaussianBlur in='m' stdDeviation='14'/>` +
+    `<filter id='um-halo' x='-150%' y='-150%' width='400%' height='400%'>` +
+    `<feMorphology operator='dilate' radius='2' in='SourceGraphic' result='d'/><feGaussianBlur in='d' stdDeviation='7'/>` +
     `</filter>` +
     `</defs>` +
-    `<g>${flicker}` +
-    layer("uml-haze", "0.5") +
-    layer("uml-far", "0.65") +
-    layer("uml-mid", "0.8") +
-    layer("uml-near", "1") +
-    `</g>`
+    `<g>${pulse}<g filter='url(#um-halo)' opacity='0.4'>${r}</g>` +
+    `<g filter='url(#um-glow)' opacity='0.7'>${r}</g></g>`
   );
 }
 
+function moonRect(dx, dy, ox, oy, w, h, fill, opacity) {
+  const x = MOON_POS.ox + dx * PX + ox;
+  const y = MOON_POS.oy + dy * PX + oy;
+  const op = opacity != null ? ` opacity='${opacity}'` : "";
+  return `<rect x='${x}' y='${y}' width='${w}' height='${h}' fill='${fill}'${op}/>`;
+}
+
+function moonDraw() {
+  const soft = MOON_SOFT.map(([dx, dy]) =>
+    moonRect(dx, dy, 0, 0, PX, PX, C.moonRim, "0.5"),
+  ).join("");
+  const body = MOON.map(([dx, dy, fill]) => moonRect(dx, dy, 0, 0, PX, PX, fill)).join("");
+  const pits = CRATER_PITS.map(([dx, dy, ox, oy, w, h, fill]) =>
+    moonRect(dx, dy, ox, oy, w, h, fill),
+  ).join("");
+  const highlights = HIGHLIGHTS.map(([dx, dy, ox, oy, fill]) =>
+    moonRect(dx, dy, ox, oy, 1, 1, fill, "0.75"),
+  ).join("");
+  return `${moonGlow()}${soft}${body}${pits}${highlights}`;
+}
+
 function buildSvg() {
-  return `<svg xmlns='http://www.w3.org/2000/svg' width='${UNIT}' height='${H}' viewBox='0 0 ${UNIT} ${H}' preserveAspectRatio='xMidYMid slice' overflow='visible' shape-rendering='crispEdges'>${fieldStarsCells()}${nightSkyPatch()}${moonOutlineGlow()}${moonPixels()}${moonCraters()}${moonFlecks()}</svg>`;
+  return (
+    `<svg xmlns='http://www.w3.org/2000/svg' width='${W}' height='${H}' ` +
+    `viewBox='0 0 ${W} ${H}' preserveAspectRatio='xMidYMid slice' overflow='visible' ` +
+    `shape-rendering='crispEdges'>${nightSky()}${stars()}${moonDraw()}</svg>`
+  );
 }
 
 function enc(svg) {
@@ -384,7 +252,7 @@ function enc(svg) {
 
 const tileEnc = enc(buildSvg());
 
-const css = `/* Umbreon — moon on breathing night patch */
+const css = `/* Umbreon — night sky; square pixels (slice, not stretch) */
 html[data-palette="umbreon"] .section-diagonal-gap--crawl-ltr,
 html[data-palette="umbreon"] .section-diagonal-gap--crawl-rtl {
   image-rendering: pixelated;
@@ -394,10 +262,10 @@ html[data-palette="umbreon"] .section-diagonal-gap--crawl-rtl {
 html[data-palette="umbreon"] .section-diagonal-gap--crawl-ltr,
 html[data-palette="umbreon"] .section-diagonal-gap--crawl-rtl,
 html[data-palette="umbreon"] .section-diagonal-gap {
-  background-color: var(--palette-divider);
+  background-color: ${C.void};
   background-image: url("data:image/svg+xml,${tileEnc}");
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: 100% 100%;
   background-position: center;
 }
 `;
@@ -407,4 +275,4 @@ const main = readFileSync(mainPath, "utf8");
 const s = main.indexOf("/* Umbreon");
 const e = main.indexOf("/* Sylveon");
 writeFileSync(mainPath, main.slice(0, s) + css.trim() + "\n\n" + main.slice(e));
-console.log("done — Umbreon moon + night sky");
+console.log("done — Umbreon divider (proportional slice)");

@@ -63,7 +63,7 @@ export const GLACEON_PALETTE = {
   ice: "#6CB2B8",
 } as const;
 
-/** Umbreon — midnight navy + ring yellow + crimson (see styles.css). */
+/** Umbreon — navy bg, yellow text/divider, dark page borders (see styles.css). */
 export const UMBREON_PALETTE = {
   mainBackground: "#0A0E2B",
   divider: "#F6D64E",

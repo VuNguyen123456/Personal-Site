@@ -388,10 +388,10 @@ html[data-palette="umbreon"] {
   --palette-divider: #f6d64e;
   --palette-border: #1a2638;
   --palette-text-title: #d62e36;
-  --palette-text: color-mix(in srgb, #f6d64e 34%, #fffef8);
-  --palette-text-muted: color-mix(in srgb, #f6d64e 22%, #fffef8);
+  --palette-text: #f6d64e;
+  --palette-text-muted: #f6d64e;
   --palette-readout-label: #d62e36;
-  --palette-readout-body: color-mix(in srgb, #f6d64e 34%, #fffef8);
+  --palette-readout-body: #f6d64e;
   --palette-accent: #b4c0e8;
   --palette-accent-bright: #fff4a8;
   --palette-accent-crimson: #d62e36;
@@ -1033,11 +1033,16 @@ html:is([data-palette="eevee"],
   [data-palette="leafeon"],
   [data-palette="glaceon"],
   [data-palette="espeon"],
-  [data-palette="umbreon"],
   [data-palette="sylveon"]) .section-diagonal-gap {
   box-sizing: border-box;
   background-color: var(--palette-divider);
   /* Per-species motif — see eeveelution-dividers.css */
+}
+
+/* Umbreon divider — night sky tile only (not yellow band) */
+html[data-palette="umbreon"] .section-diagonal-gap {
+  box-sizing: border-box;
+  background-color: #050810;
 }
 
 /* Umbreon — section / hero titles in crimson (beats shared palette text utilities) */
@@ -1058,7 +1063,7 @@ html.dark[data-palette="espeon"] h2.dark\:text-white {
 
 /* Umbreon — Tech Stack subsection flanking lines match title (not grid border) */
 html[data-palette="umbreon"] #tech-stack .tech-subsection-title-rule {
-  border-color: var(--palette-text) !important;
+  border-color: var(--palette-text-title) !important;
 }
 
 /* Umbreon — crimson only on link hover */
