@@ -32,7 +32,7 @@ import { SITE_AUDIO } from "./siteAudioLevels";
 import { isSiteAudioMuted } from "./siteAudioMute";
 import { playDetypingTick, playTextDespawn, playTextSpawn, playTypingTick } from "./typingSound";
 import { useDividerIndex } from "./dividerIndex";
-import { PokeballOpenSpawn } from "./PokeballOpenSpawn";
+import { PokeballOpenSpawn, pokeballCryDelayMs } from "./PokeballOpenSpawn";
 import { SpacerPokeballSpawn } from "./SpacerPokeballSpawn";
 import { useDarkMode, useTheme } from "./useDarkMode";
 
@@ -273,9 +273,11 @@ const featuredFirstRowMiddlePad = "px-1.5 pt-px pb-0.5 sm:px-2 sm:pt-1 sm:pb-1 l
 const featuredFirstRowBodyPad = "pt-1 pb-1.5 sm:pt-1.5 sm:pb-2";
 const featuredFirstRowReadoutPad = "pt-1 pb-1.5 sm:pt-1.5 sm:pb-2";
 
-/** Minimal side padding so the Eeveelution row can use more horizontal space. */
-/** Less top / more bottom than symmetric py so sprites sit visually centered in the band. */
-const eeveelutionColumnPad = "px-1 pt-0 pb-2.5 sm:px-1.5 sm:pt-px sm:pb-3 lg:px-2";
+/** Match sectionColumnPad horizontal inset so left/right padding are equal. */
+const eeveelutionColumnPad =
+  "flex min-h-0 flex-col justify-center px-2 py-2 sm:px-3 sm:py-2.5 lg:px-4";
+const eeveelutionMiddleInnerClass =
+  "flex min-h-0 flex-1 w-full min-w-0 max-w-none items-center justify-center";
 
 /** Equal top & bottom padding around each main section title cluster (Portfolio, Toolkit, Break Time, hero name). */
 const sectionTitlePad = "py-0";
@@ -1420,7 +1422,11 @@ function FeaturedProjectGridRow({ project, index }: { project: PortfolioProject;
           reserveAfterTypingSpace={project.hoverRandomPokemonFromDex === true}
           idleHint="Hover the project title in the center for a short hint."
           afterTyping={
-            project.hoverRandomPokemonFromDex ? <PokemonRandomHoverSprite /> : project.hoverAfterTyping
+            project.hoverRandomPokemonFromDex
+              ? typingComplete
+                ? <PokemonRandomHoverSprite />
+                : null
+              : project.hoverAfterTyping
           }
         />
       ) : (
@@ -1714,7 +1720,18 @@ function EeveelutionBar({
   unlocked: boolean;
   onSpeciesClick?: (slug: (typeof EEVEELUTION_SPECIES)[number]) => void;
 }) {
+  const { activeEeveelutionPalette } = useTheme();
   const [unlockGen, setUnlockGen] = useState(0);
+  /** Per-species: 0 = closed, 1 = playing open anim, 2 = settled (stay open on theme switch). */
+  const [barInteractGen, setBarInteractGen] = useState<
+    Partial<Record<(typeof EEVEELUTION_SPECIES)[number], number>>
+  >({});
+  const [closingSlugs, setClosingSlugs] = useState(
+    () => new Set<(typeof EEVEELUTION_SPECIES)[number]>(),
+  );
+  const skipPaletteCloseFxRef = useRef(false);
+  const barInteractGenRef = useRef(barInteractGen);
+  barInteractGenRef.current = barInteractGen;
   const eeveeCryIndexRef = useRef(0);
   const cryAudioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -1722,60 +1739,164 @@ function EeveelutionBar({
     if (unlocked) setUnlockGen((g) => g + 1);
   }, [unlocked]);
 
-  const playEeveelutionCry = useCallback((slug: (typeof EEVEELUTION_SPECIES)[number]) => {
-    if (isSiteAudioMuted()) return;
-    const url =
-      slug === "eevee"
-        ? EEVEE_CRIES[eeveeCryIndexRef.current]
-        : eeveelutionCryUrl(slug);
-    if (slug === "eevee") {
-      eeveeCryIndexRef.current = (eeveeCryIndexRef.current + 1) % EEVEE_CRIES.length;
+  /** Deselect click closes one ball (skip flag). Light/dark toggle clears palette → close all open balls. */
+  useEffect(() => {
+    if (activeEeveelutionPalette != null) return;
+
+    if (skipPaletteCloseFxRef.current) {
+      skipPaletteCloseFxRef.current = false;
+      return;
     }
-    if (cryAudioRef.current == null) {
-      cryAudioRef.current = new Audio();
+
+    const toClose = EEVEELUTION_SPECIES.filter(
+      (s) => (barInteractGenRef.current[s] ?? 0) > 0,
+    );
+    if (toClose.length > 0) {
+      setClosingSlugs(new Set(toClose));
     }
-    const audio = cryAudioRef.current;
-    audio.src = url;
-    audio.volume = SITE_AUDIO.eeveelutionCry;
-    audio.currentTime = 0;
-    void audio.play().catch(() => {});
-  }, []);
+  }, [activeEeveelutionPalette]);
+
+  const cryDelayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const playEeveelutionCry = useCallback(
+    (slug: (typeof EEVEELUTION_SPECIES)[number], options?: { delayMs?: number }) => {
+      if (isSiteAudioMuted()) return;
+
+      const url =
+        slug === "eevee"
+          ? EEVEE_CRIES[eeveeCryIndexRef.current]
+          : eeveelutionCryUrl(slug);
+      if (slug === "eevee") {
+        eeveeCryIndexRef.current = (eeveeCryIndexRef.current + 1) % EEVEE_CRIES.length;
+      }
+
+      const play = () => {
+        if (cryAudioRef.current == null) {
+          cryAudioRef.current = new Audio();
+        }
+        const audio = cryAudioRef.current;
+        audio.src = url;
+        audio.volume = SITE_AUDIO.eeveelutionCry;
+        audio.currentTime = 0;
+        void audio.play().catch(() => {});
+      };
+
+      const delayMs = options?.delayMs ?? 0;
+      if (delayMs <= 0) {
+        play();
+        return;
+      }
+
+      if (cryDelayRef.current != null) {
+        window.clearTimeout(cryDelayRef.current);
+      }
+      cryDelayRef.current = window.setTimeout(() => {
+        cryDelayRef.current = null;
+        play();
+      }, delayMs);
+    },
+    [],
+  );
+
+  useEffect(
+    () => () => {
+      if (cryDelayRef.current != null) {
+        window.clearTimeout(cryDelayRef.current);
+      }
+    },
+    [],
+  );
 
   const handleSpeciesClick = useCallback(
     (slug: (typeof EEVEELUTION_SPECIES)[number]) => {
+      if (cryDelayRef.current != null) {
+        window.clearTimeout(cryDelayRef.current);
+        cryDelayRef.current = null;
+      }
+
+      const isDeselect = activeEeveelutionPalette === slug;
+
+      if (closingSlugs.has(slug)) return;
+
+      if (isDeselect) {
+        skipPaletteCloseFxRef.current = true;
+        setClosingSlugs((current) => new Set(current).add(slug));
+        onSpeciesClick?.(slug);
+        return;
+      }
+
+      setClosingSlugs((current) => {
+        const next = new Set(current);
+        next.delete(slug);
+        return next;
+      });
       onSpeciesClick?.(slug);
-      playEeveelutionCry(slug);
+
+      const slotGen = barInteractGen[slug] ?? 0;
+      if (slotGen === 0) {
+        setBarInteractGen((prev) => ({ ...prev, [slug]: 1 }));
+      }
+      playEeveelutionCry(slug, { delayMs: pokeballCryDelayMs() });
     },
-    [onSpeciesClick, playEeveelutionCry],
+    [activeEeveelutionPalette, barInteractGen, closingSlugs, onSpeciesClick, playEeveelutionCry],
   );
 
   return (
     <div
-      className="grid w-full grid-cols-9 items-center -translate-y-0.5 sm:-translate-y-1"
+      className="eeveelution-bar flex h-20 w-full items-center sm:h-[4.5rem] lg:h-24"
       role="group"
       aria-label="Eeveelution line"
     >
-      {EEVEELUTION_SPECIES.map((slug, index) =>
-        unlocked ? (
-          <PokeballOpenSpawn
-            key={slug}
-            spawnKey={`${slug}-${unlockGen}`}
-            spawnDelayMs={index * 90}
-            spriteSrc={eeveelutionSpriteUrl(slug)}
-            size="bar"
-            onClick={() => handleSpeciesClick(slug)}
-            ariaLabel={`${eeveelutionLabel(slug)} — click to play cry`}
-            className="cursor-pointer transition-[opacity,transform] duration-200 hover:scale-105 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black"
-            spriteClassName="transition-[opacity,transform] duration-200"
-          />
-        ) : (
-          <motion.div
-            key={slug}
-            className="flex h-11 w-full min-h-0 items-center justify-center overflow-hidden p-0 sm:h-12 lg:h-14"
-            aria-hidden
-          />
-        ),
-      )}
+      {EEVEELUTION_SPECIES.map((slug) => {
+        const isClosing = closingSlugs.has(slug);
+        const slotGen = barInteractGen[slug] ?? 0;
+        const revealed = slotGen > 0;
+        const settled = slotGen >= 2;
+        return (
+          <div key={slug} className="flex min-w-0 flex-1 items-center justify-center">
+            {unlocked ? (
+              <PokeballOpenSpawn
+                spawnKey={`${slug}-${unlockGen}`}
+                concealed={slotGen === 0 && !isClosing}
+                closing={isClosing}
+                startRevealed={settled && !isClosing}
+                playOpenSound={false}
+                playCloseSound
+                onRevealComplete={() => {
+                  setBarInteractGen((prev) => {
+                    if ((prev[slug] ?? 0) !== 1) return prev;
+                    return { ...prev, [slug]: 2 };
+                  });
+                }}
+                onCloseComplete={() => {
+                  setBarInteractGen((prev) => ({ ...prev, [slug]: 0 }));
+                  setClosingSlugs((current) => {
+                    const next = new Set(current);
+                    next.delete(slug);
+                    return next;
+                  });
+                }}
+                spriteSrc={eeveelutionSpriteUrl(slug)}
+                size="bar"
+                onClick={() => handleSpeciesClick(slug)}
+                ariaLabel={
+                  revealed
+                    ? `${eeveelutionLabel(slug)} — click to play cry`
+                    : `Reveal ${eeveelutionLabel(slug)}`
+                }
+                ariaPressed={activeEeveelutionPalette === slug && !isClosing}
+                className="m-0 shrink-0 cursor-pointer border-0 bg-transparent p-0 transition-[opacity,transform] duration-200 hover:scale-105 hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-black"
+                spriteClassName="transition-[opacity,transform] duration-200"
+              />
+            ) : (
+              <motion.div
+                className="h-20 w-7 sm:h-[4.5rem] sm:w-8 lg:h-24"
+                aria-hidden
+              />
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -2208,7 +2329,12 @@ function CompactSpacerSectionShell({
       className={`relative w-full transition-colors duration-300 ease-in-out ${className}`}
     >
       <SectionTopBorder2 />
-      <ThreeColumnBody columnClassName={eeveelutionColumnPad}>{children}</ThreeColumnBody>
+      <ThreeColumnBody
+        columnClassName={eeveelutionColumnPad}
+        middleInnerClassName={eeveelutionMiddleInnerClass}
+      >
+        {children}
+      </ThreeColumnBody>
       <SectionBottomBorder2 />
     </section>
   );
@@ -2218,8 +2344,8 @@ function CompactSpacerSectionShell({
 export function CompactBlankSpacerSection({ className }: { className: string }) {
   return (
     <CompactSpacerSectionShell className={className}>
-      <div className="grid w-full grid-cols-9 items-center -translate-y-0.5 sm:-translate-y-1" aria-hidden>
-        <div className="col-span-9 h-11 sm:h-12 lg:h-14" />
+      <div className="grid h-20 w-full grid-cols-9 sm:h-[4.5rem] lg:h-24" aria-hidden>
+        <div className="col-span-9 h-20 sm:h-[4.5rem] lg:h-24" />
       </div>
     </CompactSpacerSectionShell>
   );
@@ -2348,6 +2474,8 @@ function ThreeColumnBody({
   children,
   gridClassName = "",
   columnClassName = "",
+  middleInnerClassName = middleColumnInnerClass,
+  middleFlush = false,
   middleBorderClassName,
   leftAside,
   rightAside,
@@ -2355,6 +2483,10 @@ function ThreeColumnBody({
   children: ReactNode;
   gridClassName?: string;
   columnClassName?: string;
+  /** Override default `max-w-2xl` cap (e.g. Eeveelution bar uses full middle column width). */
+  middleInnerClassName?: string;
+  /** Render children directly in the bordered middle column (full width between vertical rules). */
+  middleFlush?: boolean;
   /** Defaults to gray rules; use e.g. `border-white/30` on dark bars (footer). */
   middleBorderClassName?: string;
   /** Optional content in the left grid column (e.g. Featured Work typewriter). */
@@ -2369,32 +2501,40 @@ function ThreeColumnBody({
 
   useLayoutEffect(() => {
     const mid = middleEl.current;
-    const inner = innerEl.current;
-    if (!mid || !inner) return;
+    if (!mid) return;
 
     const update = () => {
       const m = middleEl.current;
-      const i = innerEl.current;
-      if (!m || !i) return;
-      const midR = m.getBoundingClientRect();
-      const innerR = i.getBoundingClientRect();
+      if (!m) return;
       const cs = getComputedStyle(m);
       const bl = parseFloat(cs.borderLeftWidth) || 0;
+      const br = parseFloat(cs.borderRightWidth) || 0;
+
+      if (middleFlush) {
+        setMiddleRuleLayout({ marginLeft: 0, width: m.clientWidth - bl - br });
+        return;
+      }
+
+      const i = innerEl.current;
+      if (!i) return;
+      const midR = m.getBoundingClientRect();
+      const innerR = i.getBoundingClientRect();
       const marginLeft = midR.left + bl - innerR.left;
-      const width = midR.width - bl - (parseFloat(cs.borderRightWidth) || 0);
+      const width = m.clientWidth - bl - br;
       setMiddleRuleLayout({ marginLeft, width });
     };
 
     update();
     const ro = new ResizeObserver(update);
     ro.observe(mid);
-    ro.observe(inner);
+    const inner = innerEl.current;
+    if (inner) ro.observe(inner);
     window.addEventListener("resize", update);
     return () => {
       ro.disconnect();
       window.removeEventListener("resize", update);
     };
-  }, []);
+  }, [middleFlush]);
 
   return (
     <MiddleRuleLayoutContext.Provider value={middleRuleLayout}>
@@ -2413,9 +2553,13 @@ function ThreeColumnBody({
           ref={middleEl}
           className={`relative min-w-0 overflow-visible border-l border-r border-solid ${middleBorders} ${columnClassName}`}
         >
-          <div ref={innerEl} className={middleColumnInnerClass}>
-            {children}
-          </div>
+          {middleFlush ? (
+            children
+          ) : (
+            <div ref={innerEl} className={middleInnerClassName}>
+              {children}
+            </div>
+          )}
         </div>
         <div
           className={

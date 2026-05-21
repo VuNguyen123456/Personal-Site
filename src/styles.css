@@ -142,6 +142,44 @@ html.dark .spacer-middle-dots {
   image-rendering: crisp-edges;
 }
 
+/* Pokemon AI Agent row — dex hover ball (edit nudge here; motion scale won't override) */
+.pokeball-dex-anchor .pokeball-dex-ball-slot {
+  --pokeball-dex-nudge-x: 8px;
+  --pokeball-dex-nudge-y: 0px;
+  transform: translate(calc(-50% - var(--pokeball-dex-nudge-x)), var(--pokeball-dex-nudge-y));
+}
+
+/* Eeveelution bar — equal flex slots, centered in symmetric middle-column padding */
+.eeveelution-bar {
+  --eeveelution-bar-nudge: -16px;
+  --eeveelution-bar-nudge-y: -16px;
+  margin: 0;
+  padding: 0;
+  /* Row + ball art read slightly right of panel center */
+  transform: translateX(var(--eeveelution-bar-nudge)) translateY(var(--eeveelution-bar-nudge-y));
+}
+
+/* Poké Ball PNG has extra transparent space above the draw — lift optically (X unchanged) */
+.eeveelution-bar .pokeball-open-frame {
+  transform: translate(calc(-50% - 3px), calc(-50% - 4px));
+}
+
+/* Same anchor as ball; sprite art is offset inside so the ball never moves */
+.eeveelution-bar .pokeball-bar-sprite-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0;
+  height: 0;
+  overflow: visible;
+  transform: translate(calc(-50% - 3px), calc(-50% - 4px));
+}
+
+/* Pokédex sprites sit left in their canvas — nudge right to match ball */
+.eeveelution-bar .pokeball-bar-sprite-offset {
+  transform: translateX(20px);
+}
+
 /* Local Sylveon gif has more canvas padding — scale up to match Pokédex sprites */
 html[data-palette="sylveon"] .spacer-eeveelution-sprite[data-species="sylveon"] .spacer-eeveelution-sprite-img {
   height: 14rem;

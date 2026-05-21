@@ -103,6 +103,24 @@ function runWithAudioContext(play: (ctx: AudioContext, t0: number) => void): voi
   void resumeAudioContext(ctx).then(start);
 }
 
+/** Shared AudioContext for MP3/SFX (no reduced-motion gate — use for Poké Ball open, etc.). */
+export function runWithSharedAudioContext(play: (ctx: AudioContext) => void): void {
+  if (isSiteAudioMuted()) return;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
+  const start = () => {
+    if (ctx.state === "running") play(ctx);
+  };
+
+  if (ctx.state === "running") {
+    start();
+    return;
+  }
+
+  void resumeAudioContext(ctx).then(start);
+}
+
 function playSquareBlip(
   ctx: AudioContext,
   t0: number,
