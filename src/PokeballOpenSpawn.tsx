@@ -43,8 +43,8 @@ const SIZE = {
     hiddenY: 28,
     hiddenScale: 0.35,
     restY: 0,
-    sylveonRestY: 50,
-    sylveonHiddenY: 28 + 50,
+    sylveonRestY: 25,
+    sylveonHiddenY: 28 + 25,
   },
   bar: {
     root: "relative flex h-20 w-full items-center justify-center sm:h-[4.5rem] lg:h-24",
