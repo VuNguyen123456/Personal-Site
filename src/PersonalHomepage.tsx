@@ -766,6 +766,7 @@ function ProjectRowTypewriterReadout({
   idleHint = "Hover the project title to the right for a short hint.",
   reserveAfterTypingSpace = false,
   reserveLine,
+  colorFieldLabels = false,
 }: {
   displayLine: string;
   fullLine: string;
@@ -777,6 +778,8 @@ function ProjectRowTypewriterReadout({
   reserveAfterTypingSpace?: boolean;
   /** Full caption reserved in layout while idle (e.g. award rows). */
   reserveLine?: string;
+  /** Color `Field:` labels like `How:` / `Description:`. */
+  colorFieldLabels?: boolean;
 }) {
   const hasLine = displayLine.length > 0 || caretVisible;
   const showAfter = typingComplete && afterTyping != null;
@@ -799,7 +802,7 @@ function ProjectRowTypewriterReadout({
       >
         {hasLine ? (
           <>
-            {displayLine}
+            {colorFieldLabels ? renderProjectReadoutColoredText(displayLine) : displayLine}
             <TechReadoutCaret visible={caretVisible} />
           </>
         ) : null}
@@ -824,6 +827,46 @@ function TechReadoutCaret({ visible, className }: { visible: boolean; className?
       ▍
     </span>
   );
+}
+
+function projectReadoutFieldClass(field: string): string {
+  switch (field.trim().toLowerCase()) {
+    case "how":
+      return "font-semibold text-emerald-600 dark:text-emerald-400";
+    case "description":
+      return "font-semibold text-violet-600 dark:text-violet-400";
+    default:
+      return "font-semibold text-blue-600 dark:text-blue-400";
+  }
+}
+
+/** Renders `Field: value` lines with colored labels for award readouts. */
+function renderProjectReadoutColoredText(text: string): ReactNode {
+  if (!text) return null;
+
+  const lines = text.split("\n");
+  return lines.map((line, lineIndex) => {
+    const colonMatch = line.match(/^([^:\n]+):(\s*.*)$/);
+    const lineBreak = lineIndex < lines.length - 1 ? "\n" : null;
+
+    if (!colonMatch) {
+      return (
+        <Fragment key={lineIndex}>
+          {line}
+          {lineBreak}
+        </Fragment>
+      );
+    }
+
+    const [, field, value] = colonMatch;
+    return (
+      <Fragment key={lineIndex}>
+        <span className={projectReadoutFieldClass(field)}>{field}:</span>
+        {value}
+        {lineBreak}
+      </Fragment>
+    );
+  });
 }
 
 /** Renders `Field: value` lines — label uses palette accent, value uses normal body text. */
@@ -920,8 +963,8 @@ function TechStackTypewriterReadout({
         <p className={techReadoutClass}>
           {label ? (
             <>
-              <span className="font-semibold text-blue-600 dark:text-blue-400">{label}</span>
-              <span aria-hidden>: </span>
+              <span className="font-semibold text-blue-600 dark:text-blue-400">{label}:</span>
+              <span aria-hidden> </span>
             </>
           ) : null}
           {hasBody ? (
@@ -1253,6 +1296,7 @@ function CredentialGridRow({ entry, index }: { entry: CredentialEntry; index: nu
             caretVisible={motivation.caretVisible}
             typingComplete={motivation.typingComplete}
             reserveLine={motivationText}
+            colorFieldLabels
             idleHint="Hover the award title in the center for how it relates to you."
           />
         </div>
@@ -1304,6 +1348,7 @@ function CredentialGridRow({ entry, index }: { entry: CredentialEntry; index: nu
             caretVisible={description.caretVisible}
             typingComplete={description.typingComplete}
             reserveLine={descriptionText}
+            colorFieldLabels
             idleHint="Hover the award title in the center for a description."
           />
         </div>
