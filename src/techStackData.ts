@@ -1,3 +1,5 @@
+import { techAssetUrl } from "./techAssets";
+
 export type TechStackItem = {
   name: string;
   hoverCaption: string;
@@ -8,8 +10,6 @@ export type TechStackItem = {
   fallbackIcon?: string;
 };
 
-const techAsset = (fileName: string) => `/assets/tech/${fileName}`;
-
 export const techStackSections: { title: string; items: TechStackItem[] }[] = [
   {
     title: "Programming",
@@ -17,18 +17,18 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Python",
         website: "https://www.python.org",
-        iconImage: techAsset("python.png"),
+        iconImage: techAssetUrl("python.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
         hoverCaption: "Versatile language for backends, data work, and automation.",
         personalExperience:
-          "Built DNS clients, MTP over UDP, network routing sims, MapReduce in Go’s cousin workflows, adversarial search, Bayesian networks, Grammys web analytics pipelines, and a LangChain Pokémon strategy agent.",
+          "Built DNS clients, MTP over UDP, network routing sims, MapReduce workflows, adversarial search, Bayesian networks, Grammys web analytics pipelines, a LangChain Pokémon strategy agent, and a six-agent LangGraph AIOps platform for infra recovery.",
         personalWhy:
           "I love how fast I can go from idea to working prototype—whether it’s sockets, AI, or a one-off data script.",
       },
       {
         name: "C",
         website: "https://en.cppreference.com/w/c",
-        iconImage: techAsset("c.png"),
+        iconImage: techAssetUrl("c.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg",
         hoverCaption: "Low-level language for performance and systems fundamentals.",
         personalExperience:
@@ -39,7 +39,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Go",
         website: "https://go.dev",
-        iconImage: techAsset("go.png"),
+        iconImage: techAssetUrl("go.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg",
         hoverCaption: "Compiled language for simple, fast concurrent services.",
         personalExperience:
@@ -50,7 +50,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Jinja",
         website: "https://jinja.palletsprojects.com",
-        iconImage: techAsset("jinja.png"),
+        iconImage: techAssetUrl("jinja.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jinja/jinja-original.svg",
         hoverCaption: "Templating for generating HTML and config from data.",
         personalExperience:
@@ -61,7 +61,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Java",
         website: "https://www.java.com",
-        iconImage: techAsset("java.png"),
+        iconImage: techAssetUrl("java.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg",
         hoverCaption: "Widely used for enterprise apps and Android.",
         personalExperience:
@@ -72,7 +72,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "JavaScript",
         website: "https://developer.mozilla.org/docs/Web/JavaScript",
-        iconImage: techAsset("javascript.png"),
+        iconImage: techAssetUrl("javascript.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg",
         hoverCaption: "The language of the web in browsers and beyond.",
         personalExperience:
@@ -83,7 +83,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "TypeScript",
         website: "https://www.typescriptlang.org",
-        iconImage: techAsset("typescript.png"),
+        iconImage: techAssetUrl("typescript.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg",
         hoverCaption: "JavaScript with static types for safer large codebases.",
         personalExperience:
@@ -94,7 +94,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "HTML5",
         website: "https://developer.mozilla.org/docs/Web/HTML",
-        iconImage: techAsset("html5.png"),
+        iconImage: techAssetUrl("html5.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg",
         hoverCaption: "Structure and semantics for web pages.",
         personalExperience:
@@ -105,7 +105,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "CSS3",
         website: "https://developer.mozilla.org/docs/Web/CSS",
-        iconImage: techAsset("css3.png"),
+        iconImage: techAssetUrl("css3.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg",
         hoverCaption: "Styling, layout, and responsive design on the web.",
         personalExperience:
@@ -116,7 +116,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Bash",
         website: "https://www.gnu.org/software/bash/",
-        iconImage: techAsset("bash.png"),
+        iconImage: techAssetUrl("bash.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bash/bash-original.svg",
         hoverCaption: "Shell scripting for automation and dev workflows.",
         personalExperience:
@@ -132,7 +132,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "GitHub",
         website: "https://github.com",
-        iconImage: techAsset("github.png"),
+        iconImage: techAssetUrl("github.png"),
         hoverCaption: "Host repos, collaborate, and ship with pull requests.",
         personalExperience:
           "Host coursework, hackathons, and portfolio code with PR-based reviews across PatriotRead, Quizly, and systems projects.",
@@ -142,7 +142,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "GitLab",
         website: "https://gitlab.com",
-        iconImage: techAsset("gitlab.png"),
+        iconImage: techAssetUrl("gitlab.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/gitlab/gitlab-original.svg",
         hoverCaption: "Repos, CI/CD, and issue tracking in one platform.",
         personalExperience:
@@ -153,7 +153,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Microsoft Excel",
         website: "https://www.microsoft.com/microsoft-365/excel",
-        iconImage: techAsset("excel.png"),
+        iconImage: techAssetUrl("excel.png"),
         hoverCaption: "Spreadsheets for analysis, modeling, and reporting.",
         personalExperience:
           "Partnered on Intel’s sustainability analytics—benchmarking 15M+ kWh savings and 6,700+ tons CO₂ alongside SQL-driven insights.",
@@ -163,17 +163,29 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Docker",
         website: "https://www.docker.com",
-        iconImage: techAsset("docker.png"),
+        iconImage: techAssetUrl("docker.png"),
         hoverCaption: "Containers for consistent builds and deploys.",
         personalExperience:
-          "Containerized a PCI-aware checkout service on AWS ECS with blue-green deploys, hitting sub-200ms responses and zero-downtime releases.",
+          "Containerized a PCI-aware checkout service on AWS ECS with blue-green deploys, and packaged the multi-agent infra recovery platform as Docker images for Kubernetes with liveness probes.",
         personalWhy:
           "Containers make “works on my machine” disappear—I trust them for reproducible deploys.",
       },
       {
+        name: "Kubernetes",
+        website: "https://kubernetes.io",
+        iconImage: techAssetUrl("kubernetes.png"),
+        fallbackIcon:
+          "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg",
+        hoverCaption: "Orchestrate containers with declarative deploys, services, and health probes.",
+        personalExperience:
+          "Deployed the multi-agent infra recovery platform on Kubernetes with Docker images, liveness probes, and safe rollouts for the FastAPI control plane.",
+        personalWhy:
+          "K8s is where “works in a container” becomes “survives restarts and traffic”—I like wiring probes before trusting automation.",
+      },
+      {
         name: "AWS",
         website: "https://aws.amazon.com",
-        iconImage: techAsset("aws.png"),
+        iconImage: techAssetUrl("aws.png"),
         hoverCaption: "Amazon cloud for compute, storage, and managed services.",
         personalExperience:
           "Interned on AWS at 22nd Century: ECS, ALB, CloudFront, RDS Multi-AZ, and auto-scaling checkout. At PatriotHacks I ran Lambda + API Gateway for TTS/LLM endpoints.",
@@ -183,17 +195,17 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Azure",
         website: "https://azure.microsoft.com",
-        iconImage: techAsset("azure.png"),
-        hoverCaption: "Microsoft cloud for apps and enterprise workloads.",
+        iconImage: techAssetUrl("azure.png"),
+        hoverCaption: "Microsoft cloud for apps, AI, observability, and serverless workloads.",
         personalExperience:
-          "PatriotRead routes long text through Azure OpenAI and Speech Services with retries and backoff for sub-100ms TTS at scale.",
+          "PatriotRead routes long text through Azure OpenAI and Speech Services with retries and backoff. On my AIOps platform I ingest Application Insights failure telemetry via KQL REST and trigger Azure Functions as post-approval remediation hooks.",
         personalWhy:
-          "Azure’s AI APIs slot cleanly into accessibility features—I like pairing them with lightweight serverless fronts.",
+          "Azure lets me pair AI, observability, and serverless hooks in one cloud—I like wiring telemetry into automation instead of bolting it on later.",
       },
       {
         name: "dbt",
         website: "https://www.getdbt.com",
-        iconImage: techAsset("dbt.png"),
+        iconImage: techAssetUrl("dbt.png"),
         fallbackIcon: "https://www.vectorlogo.zone/logos/getdbt/getdbt-icon.svg",
         hoverCaption: "Transform warehouse data with SQL and version control.",
         personalExperience:
@@ -204,7 +216,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Snowflake",
         website: "https://www.snowflake.com",
-        iconImage: techAsset("snowflake.png"),
+        iconImage: techAssetUrl("snowflake.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/snowflake/snowflake-original.svg",
         hoverCaption: "Cloud data warehouse for analytics at scale.",
         personalExperience:
@@ -215,7 +227,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Jira",
         website: "https://www.atlassian.com/software/jira",
-        iconImage: techAsset("jira.png"),
+        iconImage: techAssetUrl("jira.png"),
         hoverCaption: "Track agile work, sprints, and project issues.",
         personalExperience:
           "Led The Fitting Room prototype with Agile sprints at 22nd Century and coordinated Monstarlab mobile work across design and engineering.",
@@ -225,17 +237,40 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "PostgreSQL",
         website: "https://www.postgresql.org",
-        iconImage: techAsset("postgresql.png"),
+        iconImage: techAssetUrl("postgresql.png"),
         hoverCaption: "Open-source relational database with strong SQL.",
         personalExperience:
-          "At Gigmarket I built CRUD with indexing and GraphQL atop Postgres; GMU coursework includes Oracle/SQL library systems and relational modeling.",
+          "At Gigmarket I built CRUD with indexing and GraphQL atop Postgres; GMU coursework includes Oracle/SQL library systems. My infra recovery agents persist incident reports and audit outcomes in PostgreSQL for Grafana-backed review.",
         personalWhy:
           "Postgres is my default when data integrity matters—I trust its SQL and extension ecosystem.",
       },
       {
+        name: "Prometheus",
+        website: "https://prometheus.io",
+        iconImage: techAssetUrl("prometheus.png"),
+        fallbackIcon:
+          "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prometheus/prometheus-original.svg",
+        hoverCaption: "Time-series metrics for alerting and SRE dashboards.",
+        personalExperience:
+          "Exposed six custom metrics from the AIOps pipeline and wired them into incident workflows alongside PostgreSQL-backed reports.",
+        personalWhy:
+          "Metrics turn agent behavior into something you can trust—I’d rather chart failure rates than guess from logs alone.",
+      },
+      {
+        name: "Grafana",
+        website: "https://grafana.com",
+        iconImage: techAssetUrl("grafana.png"),
+        fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/grafana/grafana-original.svg",
+        hoverCaption: "Dashboards and visualization on top of metrics stores.",
+        personalExperience:
+          "Built a Grafana dashboard over Prometheus for the infra recovery agents—surfacing incident state, agent outcomes, and ops health in one view.",
+        personalWhy:
+          "A good dashboard is a shared picture for humans and agents—I use Grafana when the story needs to be seen, not grep’d.",
+      },
+      {
         name: "SQL",
         website: "https://www.postgresql.org/docs/",
-        iconImage: techAsset("sql.png"),
+        iconImage: techAssetUrl("sql.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg",
         hoverCaption: "Query and model relational data with structured SQL.",
         personalExperience:
@@ -246,7 +281,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Git",
         website: "https://git-scm.com",
-        iconImage: techAsset("git.png"),
+        iconImage: techAssetUrl("git.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg",
         hoverCaption: "Distributed version control for code history.",
         personalExperience:
@@ -257,7 +292,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "MongoDB",
         website: "https://www.mongodb.com",
-        iconImage: techAsset("mongodb.png"),
+        iconImage: techAssetUrl("mongodb.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg",
         hoverCaption: "Document database for flexible JSON-like data.",
         personalExperience:
@@ -268,13 +303,13 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Redis",
         website: "https://redis.io",
-        iconImage: techAsset("redis.png"),
+        iconImage: techAssetUrl("redis.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/redis/redis-original.svg",
-        hoverCaption: "In-memory cache for fast reads and lower DB load.",
+        hoverCaption: "In-memory data store for caching, sessions, and fast state.",
         personalExperience:
-          "Added Redis caching to Gigmarket’s GraphQL stack to cut latency and database pressure on hot queries.",
+          "At Gigmarket I cached hot GraphQL paths in Redis to cut latency. On my infra recovery platform I use Redis Stack with LangGraph checkpointing so orchestration can pause for approval and resume safely.",
         personalWhy:
-          "A well-placed cache is the cheapest performance win—I enjoy measuring before and after.",
+          "Redis is more than a cache for me—it’s where fast state and safe agent pause/resume meet when automation needs a human gate.",
       },
     ],
   },
@@ -284,7 +319,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Angular",
         website: "https://angular.dev",
-        iconImage: techAsset("angular.png"),
+        iconImage: techAssetUrl("angular.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/angularjs/angularjs-original.svg",
         hoverCaption: "TypeScript framework for large enterprise web apps.",
         personalExperience:
@@ -295,7 +330,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "React.js",
         website: "https://react.dev",
-        iconImage: techAsset("react.png"),
+        iconImage: techAssetUrl("react.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg",
         hoverCaption: "Component UI library for interactive front ends.",
         personalExperience:
@@ -306,7 +341,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Node.js",
         website: "https://nodejs.org",
-        iconImage: techAsset("nodejs.png"),
+        iconImage: techAssetUrl("nodejs.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg",
         hoverCaption: "JavaScript runtime for servers and tooling.",
         personalExperience:
@@ -317,7 +352,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Express.js",
         website: "https://expressjs.com",
-        iconImage: techAsset("express-js.png"),
+        iconImage: techAssetUrl("express-js.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg",
         hoverCaption: "Minimal Node framework for HTTP APIs and middleware.",
         personalExperience:
@@ -328,18 +363,18 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "FastAPI",
         website: "https://fastapi.tiangolo.com",
-        iconImage: techAsset("fast-api.gif"),
+        iconImage: techAssetUrl("fast-api.gif"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg",
         hoverCaption: "Modern Python API framework with automatic OpenAPI docs.",
         personalExperience:
-          "Architected Quizly’s 30+ endpoints and CourseCupid’s matching, chatbot, and analytics APIs with Pydantic validation.",
+          "Architected Quizly’s 30+ endpoints and CourseCupid’s matching, chatbot, and analytics APIs with Pydantic validation. On my AIOps platform, FastAPI is the human-in-the-loop control plane—approval endpoints that resume LangGraph runs after review.",
         personalWhy:
           "FastAPI’s speed and schema validation make Python backends feel as crisp as typed frontends.",
       },
       {
         name: "GraphQL",
         website: "https://graphql.org",
-        iconImage: techAsset("graphql.png"),
+        iconImage: techAssetUrl("graphql.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/graphql/graphql-plain.svg",
         hoverCaption: "Query APIs for exactly the data clients need.",
         personalExperience:
@@ -350,7 +385,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "RESTful APIs",
         website: "https://restfulapi.net",
-        iconImage: techAsset("rest-api.png"),
+        iconImage: techAssetUrl("rest-api.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/fastapi/fastapi-original.svg",
         hoverCaption: "HTTP APIs built around resources and verbs.",
         personalExperience:
@@ -361,7 +396,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Socket.IO",
         website: "https://socket.io",
-        iconImage: techAsset("socket-io.png"),
+        iconImage: techAssetUrl("socket-io.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/socketio/socketio-original.svg",
         hoverCaption: "Real-time bidirectional events between client and server.",
         personalExperience:
@@ -372,7 +407,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Pydantic",
         website: "https://docs.pydantic.dev",
-        iconImage: techAsset("pydantic.png"),
+        iconImage: techAssetUrl("pydantic.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
         hoverCaption: "Validation and settings with Python type hints.",
         personalExperience:
@@ -383,7 +418,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Flutter",
         website: "https://flutter.dev",
-        iconImage: techAsset("Flutter.png"),
+        iconImage: techAssetUrl("Flutter.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flutter/flutter-original.svg",
         hoverCaption: "Cross-platform UI toolkit with Dart for mobile apps.",
         personalExperience:
@@ -394,7 +429,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Android Studio",
         website: "https://developer.android.com/studio",
-        iconImage: techAsset("android-studio.png"),
+        iconImage: techAssetUrl("android-studio.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/androidstudio/androidstudio-original.svg",
         hoverCaption: "Official IDE for building Android apps.",
         personalExperience:
@@ -405,7 +440,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Android Emulator",
         website: "https://developer.android.com/studio/run/emulator",
-        iconImage: techAsset("android-emulator.png"),
+        iconImage: techAssetUrl("android-emulator.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/android/android-original.svg",
         hoverCaption: "Virtual devices to test Android without hardware.",
         personalExperience:
@@ -421,7 +456,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "scikit-learn",
         website: "https://scikit-learn.org",
-        iconImage: techAsset("scikit-learn.png"),
+        iconImage: techAssetUrl("scikit-learn.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scikitlearn/scikitlearn-original.svg",
         hoverCaption: "Classic ML algorithms and tools in Python.",
         personalExperience:
@@ -432,7 +467,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Pandas",
         website: "https://pandas.pydata.org",
-        iconImage: techAsset("pandas.png"),
+        iconImage: techAssetUrl("pandas.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg",
         hoverCaption: "DataFrames for cleaning and analyzing tables.",
         personalExperience:
@@ -443,7 +478,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "NumPy",
         website: "https://numpy.org",
-        iconImage: techAsset("numpy.png"),
+        iconImage: techAssetUrl("numpy.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg",
         hoverCaption: "Fast numerical arrays and linear algebra.",
         personalExperience:
@@ -454,7 +489,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "OpenCV",
         website: "https://opencv.org",
-        iconImage: techAsset("opencv.png"),
+        iconImage: techAssetUrl("opencv.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/opencv/opencv-original.svg",
         hoverCaption: "Computer vision and image processing.",
         personalExperience:
@@ -465,7 +500,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "matplotlib",
         website: "https://matplotlib.org",
-        iconImage: techAsset("matplotlib.png"),
+        iconImage: techAssetUrl("matplotlib.png"),
         fallbackIcon: "https://upload.wikimedia.org/wikipedia/commons/0/01/Created_with_Matplotlib-logo.svg",
         hoverCaption: "Foundational plotting for Python charts.",
         personalExperience:
@@ -476,7 +511,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "seaborn",
         website: "https://seaborn.pydata.org",
-        iconImage: techAsset("seaborn.png"),
+        iconImage: techAssetUrl("seaborn.png"),
         fallbackIcon: "https://seaborn.pydata.org/_images/logo-mark-lightbg.svg",
         hoverCaption: "Statistical visualization on top of matplotlib.",
         personalExperience:
@@ -487,7 +522,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Plotly",
         website: "https://plotly.com/python/",
-        iconImage: techAsset("plotly.png"),
+        iconImage: techAssetUrl("plotly.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/plotly/plotly-original.svg",
         hoverCaption: "Interactive charts for dashboards and storytelling.",
         personalExperience:
@@ -498,7 +533,7 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "Jupyter",
         website: "https://jupyter.org",
-        iconImage: techAsset("jupyter.png"),
+        iconImage: techAssetUrl("jupyter.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jupyter/jupyter-original.svg",
         hoverCaption: "Notebooks for exploratory code and plots.",
         personalExperience:
@@ -509,13 +544,36 @@ export const techStackSections: { title: string; items: TechStackItem[] }[] = [
       {
         name: "LangChain",
         website: "https://www.langchain.com",
-        iconImage: techAsset("langchain.png"),
+        iconImage: techAssetUrl("langchain.png"),
         fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
         hoverCaption: "Framework for composing LLM tools, prompts, and agents.",
         personalExperience:
-          "Built a Pokémon strategy assistant with GPT-4o, four custom tools, Smogon parsers, and regex-routed prompts—cutting output verbosity ~70%.",
+          "Built a Pokémon strategy assistant with GPT-4o, four custom tools, Smogon parsers, and regex-routed prompts—cutting output verbosity ~70%. For multi-agent infra orchestration I reach for LangGraph instead.",
         personalWhy:
           "LangChain keeps tool calls and routing organized—I like structuring agents instead of one giant prompt.",
+      },
+      {
+        name: "LangGraph",
+        website: "https://www.langchain.com/langgraph",
+        iconImage: techAssetUrl("langgraph.png"),
+        fallbackIcon: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg",
+        hoverCaption: "Graph-based orchestration for multi-agent workflows, state, and interrupts.",
+        personalExperience:
+          "Orchestrated six specialized Claude agents on a LangGraph graph—routing detection-to-resolution, pausing with interrupt() for human approval, and resuming via Redis Stack checkpointing.",
+        personalWhy:
+          "Graphs make agent flow explicit—I’d rather see nodes and edges than a pile of nested prompts.",
+      },
+      {
+        name: "Claude API",
+        website: "https://www.anthropic.com/claude",
+        iconImage: techAssetUrl("claude.png"),
+        fallbackIcon:
+          "https://cdn.jsdelivr.net/gh/simple-icons/simple-icons@11/icons/anthropic.svg",
+        hoverCaption: "Anthropic’s models for reasoning, tool use, and structured agent steps.",
+        personalExperience:
+          "Ran six role-specific agents (monitor, analyze, plan, security, execute, audit) on Claude across failure types like OOM, deadlock, schema drift, and replication lag.",
+        personalWhy:
+          "I pick models for the job—Claude has been my workhorse when agents need careful reasoning before touching infra.",
       },
     ],
   },

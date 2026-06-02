@@ -2,12 +2,13 @@ import { motion } from "motion/react";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { playPokeballCloseSound, playPokeballOpenSound } from "./pokeballOpenSound";
+import { techAssetUrl } from "./techAssets";
 
 /** closed → semi-open → fully open */
 export const POKEBALL_OPEN_FRAMES = [
-  "/assets/tech/ball%20open%20(closed).png",
-  "/assets/tech/ball%20open%20(semi%20open).png",
-  "/assets/tech/ball%20open%20(opened).png",
+  techAssetUrl("ball open (closed).png"),
+  techAssetUrl("ball open (semi open).png"),
+  techAssetUrl("ball open (opened).png"),
 ] as const;
 
 export const POKEBALL_CLOSED_MS = 200;

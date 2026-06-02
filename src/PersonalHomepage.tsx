@@ -34,6 +34,7 @@ import {
   SHOWDOWN_CRY_BASE,
 } from "./pokemonShowdownCry";
 import { techStackSections, type TechStackItem } from "./techStackData";
+import { techAssetUrl } from "./techAssets";
 import { SITE_AUDIO } from "./siteAudioLevels";
 import { isSiteAudioMuted } from "./siteAudioMute";
 import { playDetypingTick, playTextDespawn, playTextSpawn, playTypingTick } from "./typingSound";
@@ -103,8 +104,6 @@ type ConnectElsewhereEntry = {
   logoSrc?: string;
 };
 
-const connectAsset = (fileName: string) => `/assets/tech/${fileName}?v=4`;
-
 /** Fixed icon column — overflow hidden so wide PNGs cannot widen the row. */
 const connectLogoSlotClass =
   "flex h-9 w-full items-center justify-start overflow-hidden sm:h-10 lg:h-11";
@@ -153,14 +152,14 @@ const connectElsewhereEntries: ConnectElsewhereEntry[] = [
     subtitle: "VuNguyen123456",
     href: "https://github.com/VuNguyen123456",
     external: true,
-    logoSrc: connectAsset("github.png"),
+    logoSrc: techAssetUrl("github.png"),
   },
   {
     title: "LinkedIn",
     subtitle: "vu-nguyen-in",
     href: "https://www.linkedin.com/in/vu-nguyen-in/",
     external: true,
-    logoSrc: connectAsset("LinkedIn.png"),
+    logoSrc: techAssetUrl("LinkedIn.png"),
   },
   {
     title: "Devpost",
@@ -180,20 +179,20 @@ const connectElsewhereEntries: ConnectElsewhereEntry[] = [
     title: "Mail",
     subtitle: "vnguy7@gmu.edu",
     href: "mailto:vnguy7@gmu.edu",
-    logoSrc: connectAsset("outlook.png"),
+    logoSrc: techAssetUrl("outlook.png"),
   },
   {
     title: "Mail",
     subtitle: "vunguyen250605@gmail.com",
     href: "mailto:vunguyen250605@gmail.com",
-    logoSrc: connectAsset("email.png"),
+    logoSrc: techAssetUrl("email.png"),
   },
   {
     title: "YouTube",
     subtitle: "dQw4w9WgXcQ",
     href: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     external: true,
-    logoSrc: connectAsset("youtube.png"),
+    logoSrc: techAssetUrl("youtube.png"),
   },
 ];
 
@@ -1959,7 +1958,7 @@ const SYLVEON_SPACER_SPRITE_FILE = "sylveon_animated_sprite_by_retronc_dg5zzve.g
 
 function spacerEeveelutionAnimUrl(slug: (typeof EEVEELUTION_SPECIES)[number]) {
   if (slug === "sylveon") {
-    return connectAsset(SYLVEON_SPACER_SPRITE_FILE);
+    return techAssetUrl(SYLVEON_SPACER_SPRITE_FILE);
   }
   return `https://img.pokemondb.net/sprites/black-white/anim/normal/${slug}.gif`;
 }
@@ -3139,6 +3138,18 @@ We wanted something that follows the user, not the website. Instead of begging e
       hoverReadoutPadTop: "justify-start pt-3 sm:pt-4",
       tools: ["FastAPI", "React", "OpenAI GPT-4o", "JWT", "MongoDB"],
       link: "https://github.com/prabhath004/quizly",
+      image: null as string | null,
+      emoji: null,
+    },
+    {
+      title: "Multi-Agentic AI Infrastructure & Data Operations Platform",
+      titleShort: "Infra Recovery Agents",
+      description:
+        "Six-agent system that monitors, diagnoses, plans, and safely executes infrastructure recovery with human approval for high-risk actions.",
+      hoverCaption: `Most agent demos stop at chatbots or toy APIs. I wanted to learn what it actually takes to let AI touch real infrastructure—metrics, logs, rollbacks—without handing over the keys. This project is my hands-on sandbox: specialized agents orchestrated with LangGraph, observability wired in, and a human approval gate before anything risky runs.`,
+      hoverReadoutPadTop: "justify-start pt-3 sm:pt-4",
+      tools: ["LangGraph", "Python", "Prometheus", "Grafana", "FastAPI"],
+      link: "https://github.com/VuNguyen123456/Multi-Agentic-AI-Agents-Infrastructure-Data-Operations-Platform",
       image: null as string | null,
       emoji: null,
     },
