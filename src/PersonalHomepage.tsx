@@ -3154,6 +3154,18 @@ We wanted something that follows the user, not the website. Instead of begging e
       emoji: null,
     },
     {
+      title: "MediQuery – Internal Medical Knowledge RAG Assistant",
+      titleShort: "MediQuery",
+      description:
+        "Three-service RAG assistant that ingests medical PDFs, retrieves grounded context from Pinecone, and answers with cited Gemini responses.",
+      hoverCaption: `Generic chatbots feel risky for anything clinical—you want answers tied to real documents, not confident guesses. MediQuery was my take on that: split Flask, Express, and React into clean services, vectorize internal PDFs, and only let the model speak from what retrieval actually found, with citations you can click back to the source.`,
+      hoverReadoutPadTop: "justify-start pt-3 sm:pt-4",
+      tools: ["Flask", "React", "LangChain", "Pinecone", "Gemini API"],
+      link: "https://github.com/VuNguyen123456/MediQuery-Internal-Medical-Knowledge-RAG-Assistant",
+      image: null as string | null,
+      emoji: null,
+    },
+    {
       title: "Pokemon AI Agent",
       description: "Conversational assistant for Pokemon strategy and analysis.",
       hoverCaption: "I love pokemon",
