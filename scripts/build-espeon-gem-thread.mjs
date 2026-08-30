@@ -35,7 +35,7 @@ const FIRE = {
   base: "#dceeff",
 };
 
-const GAP_FIRE_COUNT = 11;
+const GAP_FIRE_COUNT = 26;
 
 function rects(cells, ox, oy, fill) {
   return cells
@@ -61,20 +61,25 @@ function floatTiming(id) {
 
 function telekinesisFloat(id) {
   const { dur, begin, dir } = floatTiming(id);
-  const hx = 7 + (id % 3);
-  const hy = 8 + (id % 4);
+  const hx = 7 + (id % 4);
+  const up = 2 + (id % 2);
+  const down = 4 + (id % 3);
   const a = (dir * 4.5).toFixed(1);
-  const b = (-dir * 2.5).toFixed(1);
+  const b = (-dir * 2.8).toFixed(1);
+  const c = (dir * 1.6).toFixed(1);
   const values =
-    `0 0;${dir * hx} ${-Math.round(hy * 0.75)};${-dir * Math.round(hx * 0.9)} ${-hy};` +
-    `${-dir * hx} ${Math.round(hy * 0.5)};0 0`;
+    `0 0;${dir * hx} ${-up};${-dir * Math.round(hx * 0.9)} ${down};` +
+    `${dir * Math.round(hx * 0.45)} ${Math.round(down * 0.55)};` +
+    `${-dir * Math.round(hx * 0.65)} ${-Math.round(up * 0.6)};` +
+    `${dir * Math.round(hx * 0.3)} ${Math.round(down * 0.85)};0 0`;
   return (
     `<animateTransform attributeName='transform' type='translate' values='${values}' ` +
-    `dur='${dur}s' begin='${begin}s' repeatCount='indefinite' keyTimes='0;0.2;0.45;0.7;1' ` +
-    `calcMode='spline' keySplines='0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1'/>` +
-    `<animateTransform attributeName='transform' additive='sum' type='rotate' values='0;${a};${b};0' ` +
-    `dur='${dur}s' begin='${begin}s' repeatCount='indefinite' keyTimes='0;.35;.7;1' ` +
-    `calcMode='spline' keySplines='0.45 0 0.55 1;0.45 0 0.55 1;0.45 0 0.55 1'/>`
+    `dur='${dur}s' begin='${begin}s' repeatCount='indefinite' ` +
+    `keyTimes='0;0.14;0.31;0.48;0.67;0.84;1' ` +
+    `calcMode='spline' keySplines='0.34 0 0.66 1;0.34 0 0.66 1;0.34 0 0.66 1;0.34 0 0.66 1;0.34 0 0.66 1;0.34 0 0.66 1'/>` +
+    `<animateTransform attributeName='transform' additive='sum' type='rotate' values='0;${a};${b};${c};0' ` +
+    `dur='${dur}s' begin='${begin}s' repeatCount='indefinite' keyTimes='0;.22;.52;.78;1' ` +
+    `calcMode='spline' keySplines='0.38 0 0.62 1;0.38 0 0.62 1;0.38 0 0.62 1;0.38 0 0.62 1'/>`
   );
 }
 
@@ -346,31 +351,38 @@ function findGapFireSlots(furnitureBoxes) {
   for (let i = 0; i < sorted.length - 1 && slots.length < GAP_FIRE_COUNT; i++) {
     const left = sorted[i];
     const right = sorted[i + 1];
-    const gapLeft = left.x + left.w + 10;
-    const gapRight = right.x - 10;
-    if (gapRight - gapLeft < 12) continue;
+    const gapLeft = left.x + left.w + 8;
+    const gapRight = right.x - 8;
+    if (gapRight - gapLeft < 10) continue;
 
-    const variant = slots.length % 3;
-    const { w, h } = flameSize(variant);
-    const x = Math.round((gapLeft + gapRight - w) / 2);
-    const y = spread(i + 50, 20, 36, 26);
-    const box = { x, y, w, h };
-    const blocked =
-      furnitureBoxes.some((f) => boxesOverlap(box, f, 14)) ||
-      slots.some((s) => boxesOverlap(box, { x: s.x, y: s.y, ...flameSize(s.variant) }, 6));
-    if (!blocked) slots.push({ x, y, variant, id: slots.length + 40 });
+    const gapWidth = gapRight - gapLeft;
+    const firesInGap = gapWidth > 36 ? 2 : 1;
+    for (let f = 0; f < firesInGap && slots.length < GAP_FIRE_COUNT; f++) {
+      const variant = (slots.length + f) % 3;
+      const { w, h } = flameSize(variant);
+      const x =
+        firesInGap === 1
+          ? Math.round((gapLeft + gapRight - w) / 2)
+          : Math.round(gapLeft + ((f + 1) * gapWidth) / (firesInGap + 1) - w / 2);
+      const y = spread(i + 50 + f * 17, 14, 38, 26 + f);
+      const box = { x, y, w, h };
+      const blocked =
+        furnitureBoxes.some((fbox) => boxesOverlap(box, fbox, 10)) ||
+        slots.some((s) => boxesOverlap(box, { x: s.x, y: s.y, ...flameSize(s.variant) }, 4));
+      if (!blocked) slots.push({ x, y, variant, id: slots.length + 40 });
+    }
   }
 
-  for (let t = 0; t < 80 && slots.length < GAP_FIRE_COUNT; t++) {
+  for (let t = 0; t < 140 && slots.length < GAP_FIRE_COUNT; t++) {
     const i = slots.length + t + 60;
     const variant = i % 3;
     const { w, h } = flameSize(variant);
-    const x = spread(i, 14, UNIT - w - 14, 22);
-    const y = spread(i, 10, H - h, 24);
+    const x = spread(i, 10, UNIT - w - 10, 22);
+    const y = spread(i, 8, H - h - 2, 24);
     const box = { x, y, w, h };
     const blocked =
-      furnitureBoxes.some((f) => boxesOverlap(box, f, 14)) ||
-      slots.some((s) => boxesOverlap(box, { x: s.x, y: s.y, ...flameSize(s.variant) }, 6));
+      furnitureBoxes.some((fbox) => boxesOverlap(box, fbox, 10)) ||
+      slots.some((s) => boxesOverlap(box, { x: s.x, y: s.y, ...flameSize(s.variant) }, 4));
     if (!blocked) slots.push({ x, y, variant, id: slots.length + 40 });
   }
 
@@ -589,14 +601,17 @@ function itemY(i, variant) {
   const { h } = SPRITES[variant]();
   const tall = variant === 3 || variant === 4;
   const zone = i % 3;
+  let y;
   if (zone === 0) {
-    return spread(i, tall ? -8 : -4, tall ? 4 : 8, 7);
+    y = spread(i, 8, tall ? 16 : 20, 7);
+  } else if (zone === 1) {
+    y = spread(i, 18, 30, 11);
+  } else {
+    const bottomMin = Math.max(26, H - h);
+    y = spread(i, bottomMin, H - h + 2, 13);
   }
-  if (zone === 1) {
-    return spread(i, 12, 30, 11);
-  }
-  const bottomMin = Math.max(20, H - h - 4);
-  return spread(i, bottomMin, H - h + 2, 13);
+  if (variant === 3) y += 8;
+  return y;
 }
 
 function telekinesisScene(animated = true) {
@@ -613,7 +628,7 @@ function telekinesisScene(animated = true) {
 function buildSvg(animated = true) {
   return (
     `<svg xmlns='http://www.w3.org/2000/svg' width='${UNIT}' height='${H}' ` +
-    `viewBox='0 ${VIEW_Y} ${UNIT} ${VIEW_H}' preserveAspectRatio='none' overflow='visible' ` +
+    `viewBox='0 ${VIEW_Y} ${UNIT} ${VIEW_H}' preserveAspectRatio='xMidYMax slice' overflow='visible' ` +
     `shape-rendering='crispEdges'>${telekinesisScene(animated)}</svg>`
   );
 }
@@ -639,9 +654,9 @@ html[data-palette="espeon"] .section-diagonal-gap--crawl-rtl,
 html[data-palette="espeon"] .section-diagonal-gap {
   background-color: var(--palette-divider);
   background-image: url("data:image/svg+xml,${tileEnc}");
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  background-position: center;
+  background-repeat: repeat-x;
+  background-size: ${UNIT}px ${H}px;
+  background-position: left center;
   overflow: visible;
 }
 
