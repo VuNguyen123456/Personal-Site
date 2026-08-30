@@ -1,0 +1,833 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="48" viewBox="0 0 1000 48" preserveAspectRatio="xMidYMid slice" overflow="visible" shape-rendering="crispEdges">
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="0 0;-1000 0"
+    dur="6.50s" begin="0s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.32;0.29;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="6.50s" begin="0s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="4" width="8" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="137 0;-863 0"
+    dur="7.35s" begin="0.4s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.4;0.36;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="7.35s" begin="0.4s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="11" width="10" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="274 0;-726 0"
+    dur="8.20s" begin="0.8s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.48;0.43;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="8.20s" begin="0.8s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="18" width="12" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="411 0;-589 0"
+    dur="9.05s" begin="1.2000000000000002s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.32;0.29;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="9.05s" begin="1.2000000000000002s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="25" width="14" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="548 0;-452 0"
+    dur="9.90s" begin="1.6s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.4;0.36;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="9.90s" begin="1.6s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="32" width="8" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="685 0;-315 0"
+    dur="10.75s" begin="2s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.48;0.43;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="10.75s" begin="2s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="39" width="10" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="822 0;-178 0"
+    dur="11.60s" begin="2.4000000000000004s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.32;0.29;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="11.60s" begin="2.4000000000000004s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="8" width="12" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="959 0;-41 0"
+    dur="6.50s" begin="2.8000000000000003s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.4;0.36;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="6.50s" begin="2.8000000000000003s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="15" width="14" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="136 0;-864 0"
+    dur="7.35s" begin="3.2s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.48;0.43;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="7.35s" begin="3.2s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="22" width="8" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="273 0;-727 0"
+    dur="8.20s" begin="3.6s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.32;0.29;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="8.20s" begin="3.6s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="29" width="10" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="410 0;-590 0"
+    dur="9.05s" begin="4s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.4;0.36;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="9.05s" begin="4s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="36" width="12" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="547 0;-453 0"
+    dur="9.90s" begin="4.4s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.48;0.43;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="9.90s" begin="4.4s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="5" width="14" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="684 0;-316 0"
+    dur="10.75s" begin="4.800000000000001s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.32;0.29;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="10.75s" begin="4.800000000000001s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="12" width="8" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g>
+  <animateTransform attributeName="transform" type="translate"
+    values="821 0;-179 0"
+    dur="11.60s" begin="5.2s" repeatCount="indefinite" calcMode="linear"/>
+  <g opacity="0">
+    <animate attributeName="opacity"
+      values="0;0.4;0.36;0"
+      keyTimes="0;0.1;0.82;1"
+      dur="11.60s" begin="5.2s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    <rect x="0" y="19" width="10" height="2" fill="#ffffff"/>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 4;-60 4"
+    dur="6.5s" begin="0.000s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 4;0 0"
+      dur="6.5s" begin="0.000s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-540"
+        dur="6.5s" begin="0.000s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#89d89b"/><rect x="0" y="-4" width="4" height="4" fill="#6bc399"/><rect x="-4" y="0" width="4" height="4" fill="#6bc399"/><rect x="0" y="0" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 9;-60 9"
+    dur="7.35s" begin="-0.204s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -6;0 0"
+      dur="7.35s" begin="-0.204s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-846"
+        dur="7.35s" begin="-0.204s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-8" width="4" height="4" fill="#b68933"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="-2" y="0" width="4" height="4" fill="#6bc399"/><rect x="-2" y="4" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 14;-60 14"
+    dur="8.2s" begin="-0.456s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 8;0 0"
+      dur="8.2s" begin="-0.456s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1152"
+        dur="8.2s" begin="-0.456s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="2" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-4" y="2" width="4" height="4" fill="#4a9a5c"/><rect x="0" y="2" width="4" height="4" fill="#89d89b"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 19;-60 19"
+    dur="9.05s" begin="-0.754s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -4;0 0"
+      dur="9.05s" begin="-0.754s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1458"
+        dur="9.05s" begin="-0.754s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#e3be66"/><rect x="0" y="-4" width="4" height="4" fill="#d4a84a"/><rect x="-2" y="0" width="4" height="4" fill="#c9913a"/><rect x="-4" y="4" width="4" height="4" fill="#b68933"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 24;-60 24"
+    dur="9.9s" begin="-1.100s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 6;0 0"
+      dur="9.9s" begin="-1.100s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-540"
+        dur="9.9s" begin="-1.100s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-6" width="4" height="4" fill="#a8e8c8"/><rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="-2" y="2" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 29;-60 29"
+    dur="10.75s" begin="-1.493s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -8;0 0"
+      dur="10.75s" begin="-1.493s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-846"
+        dur="10.75s" begin="-1.493s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="0" y="0" width="4" height="4" fill="#6bc399"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 34;-60 34"
+    dur="11.6s" begin="-1.933s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 4;0 0"
+      dur="11.6s" begin="-1.933s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1152"
+        dur="11.6s" begin="-1.933s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#89d89b"/><rect x="0" y="-4" width="4" height="4" fill="#6bc399"/><rect x="-4" y="0" width="4" height="4" fill="#6bc399"/><rect x="0" y="0" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 5;-60 5"
+    dur="6.5s" begin="-1.264s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -3;0 0"
+      dur="6.5s" begin="-1.264s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1458"
+        dur="6.5s" begin="-1.264s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-8" width="4" height="4" fill="#b68933"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="-2" y="0" width="4" height="4" fill="#6bc399"/><rect x="-2" y="4" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 10;-60 10"
+    dur="7.35s" begin="-1.633s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 8;0 0"
+      dur="7.35s" begin="-1.633s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-540"
+        dur="7.35s" begin="-1.633s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="2" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-4" y="2" width="4" height="4" fill="#4a9a5c"/><rect x="0" y="2" width="4" height="4" fill="#89d89b"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 15;-60 15"
+    dur="8.2s" begin="-2.050s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -4;0 0"
+      dur="8.2s" begin="-2.050s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-846"
+        dur="8.2s" begin="-2.050s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#e3be66"/><rect x="0" y="-4" width="4" height="4" fill="#d4a84a"/><rect x="-2" y="0" width="4" height="4" fill="#c9913a"/><rect x="-4" y="4" width="4" height="4" fill="#b68933"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 20;-60 20"
+    dur="9.05s" begin="-2.514s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 6;0 0"
+      dur="9.05s" begin="-2.514s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1152"
+        dur="9.05s" begin="-2.514s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-6" width="4" height="4" fill="#a8e8c8"/><rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="-2" y="2" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 25;-60 25"
+    dur="9.9s" begin="-3.025s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -8;0 0"
+      dur="9.9s" begin="-3.025s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1458"
+        dur="9.9s" begin="-3.025s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="0" y="0" width="4" height="4" fill="#6bc399"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 30;-60 30"
+    dur="10.75s" begin="-3.583s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 4;0 0"
+      dur="10.75s" begin="-3.583s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-540"
+        dur="10.75s" begin="-3.583s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#89d89b"/><rect x="0" y="-4" width="4" height="4" fill="#6bc399"/><rect x="-4" y="0" width="4" height="4" fill="#6bc399"/><rect x="0" y="0" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 35;-60 35"
+    dur="11.6s" begin="-4.189s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -6;0 0"
+      dur="11.6s" begin="-4.189s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-846"
+        dur="11.6s" begin="-4.189s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-8" width="4" height="4" fill="#b68933"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="-2" y="0" width="4" height="4" fill="#6bc399"/><rect x="-2" y="4" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 6;-60 6"
+    dur="6.5s" begin="-2.528s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 8;0 0"
+      dur="6.5s" begin="-2.528s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1152"
+        dur="6.5s" begin="-2.528s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="2" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-4" y="2" width="4" height="4" fill="#4a9a5c"/><rect x="0" y="2" width="4" height="4" fill="#89d89b"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 11;-60 11"
+    dur="7.35s" begin="-3.063s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -4;0 0"
+      dur="7.35s" begin="-3.063s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1458"
+        dur="7.35s" begin="-3.063s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#e3be66"/><rect x="0" y="-4" width="4" height="4" fill="#d4a84a"/><rect x="-2" y="0" width="4" height="4" fill="#c9913a"/><rect x="-4" y="4" width="4" height="4" fill="#b68933"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 16;-60 16"
+    dur="8.2s" begin="-3.644s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 6;0 0"
+      dur="8.2s" begin="-3.644s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-540"
+        dur="8.2s" begin="-3.644s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-6" width="4" height="4" fill="#a8e8c8"/><rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="-2" y="2" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 21;-60 21"
+    dur="9.05s" begin="-4.274s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -8;0 0"
+      dur="9.05s" begin="-4.274s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-846"
+        dur="9.05s" begin="-4.274s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="0" y="0" width="4" height="4" fill="#6bc399"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 26;-60 26"
+    dur="9.9s" begin="-4.950s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 4;0 0"
+      dur="9.9s" begin="-4.950s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1152"
+        dur="9.9s" begin="-4.950s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#89d89b"/><rect x="0" y="-4" width="4" height="4" fill="#6bc399"/><rect x="-4" y="0" width="4" height="4" fill="#6bc399"/><rect x="0" y="0" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 31;-60 31"
+    dur="10.75s" begin="-5.674s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -6;0 0"
+      dur="10.75s" begin="-5.674s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1458"
+        dur="10.75s" begin="-5.674s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-8" width="4" height="4" fill="#b68933"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="-2" y="0" width="4" height="4" fill="#6bc399"/><rect x="-2" y="4" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 36;-60 36"
+    dur="11.6s" begin="-6.444s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 6;0 0"
+      dur="11.6s" begin="-6.444s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-540"
+        dur="11.6s" begin="-6.444s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="2" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-4" y="2" width="4" height="4" fill="#4a9a5c"/><rect x="0" y="2" width="4" height="4" fill="#89d89b"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 7;-60 7"
+    dur="6.5s" begin="-3.792s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -4;0 0"
+      dur="6.5s" begin="-3.792s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-846"
+        dur="6.5s" begin="-3.792s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#e3be66"/><rect x="0" y="-4" width="4" height="4" fill="#d4a84a"/><rect x="-2" y="0" width="4" height="4" fill="#c9913a"/><rect x="-4" y="4" width="4" height="4" fill="#b68933"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 12;-60 12"
+    dur="7.35s" begin="-4.492s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 6;0 0"
+      dur="7.35s" begin="-4.492s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1152"
+        dur="7.35s" begin="-4.492s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-6" width="4" height="4" fill="#a8e8c8"/><rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="-2" y="2" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 17;-60 17"
+    dur="8.2s" begin="-5.239s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -8;0 0"
+      dur="8.2s" begin="-5.239s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1458"
+        dur="8.2s" begin="-5.239s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="0" y="0" width="4" height="4" fill="#6bc399"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 22;-60 22"
+    dur="9.05s" begin="-6.033s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 4;0 0"
+      dur="9.05s" begin="-6.033s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-540"
+        dur="9.05s" begin="-6.033s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#89d89b"/><rect x="0" y="-4" width="4" height="4" fill="#6bc399"/><rect x="-4" y="0" width="4" height="4" fill="#6bc399"/><rect x="0" y="0" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 27;-60 27"
+    dur="9.9s" begin="-6.875s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -6;0 0"
+      dur="9.9s" begin="-6.875s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-846"
+        dur="9.9s" begin="-6.875s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-8" width="4" height="4" fill="#b68933"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="-2" y="0" width="4" height="4" fill="#6bc399"/><rect x="-2" y="4" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 32;-60 32"
+    dur="10.75s" begin="-7.764s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 8;0 0"
+      dur="10.75s" begin="-7.764s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1152"
+        dur="10.75s" begin="-7.764s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="2" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-4" y="2" width="4" height="4" fill="#4a9a5c"/><rect x="0" y="2" width="4" height="4" fill="#89d89b"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 37;-60 37"
+    dur="11.6s" begin="-8.700s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -4;0 0"
+      dur="11.6s" begin="-8.700s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1458"
+        dur="11.6s" begin="-8.700s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#e3be66"/><rect x="0" y="-4" width="4" height="4" fill="#d4a84a"/><rect x="-2" y="0" width="4" height="4" fill="#c9913a"/><rect x="-4" y="4" width="4" height="4" fill="#b68933"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 8;-60 8"
+    dur="6.5s" begin="-5.056s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 6;0 0"
+      dur="6.5s" begin="-5.056s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-540"
+        dur="6.5s" begin="-5.056s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-6" width="4" height="4" fill="#a8e8c8"/><rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="-2" y="2" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 13;-60 13"
+    dur="7.35s" begin="-5.921s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -8;0 0"
+      dur="7.35s" begin="-5.921s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-846"
+        dur="7.35s" begin="-5.921s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="0" y="0" width="4" height="4" fill="#6bc399"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 18;-60 18"
+    dur="8.2s" begin="-6.833s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 4;0 0"
+      dur="8.2s" begin="-6.833s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1152"
+        dur="8.2s" begin="-6.833s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#89d89b"/><rect x="0" y="-4" width="4" height="4" fill="#6bc399"/><rect x="-4" y="0" width="4" height="4" fill="#6bc399"/><rect x="0" y="0" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 23;-60 23"
+    dur="9.05s" begin="-7.793s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -6;0 0"
+      dur="9.05s" begin="-7.793s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1458"
+        dur="9.05s" begin="-7.793s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-8" width="4" height="4" fill="#b68933"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="-2" y="0" width="4" height="4" fill="#6bc399"/><rect x="-2" y="4" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 28;-60 28"
+    dur="9.9s" begin="-8.800s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 8;0 0"
+      dur="9.9s" begin="-8.800s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-540"
+        dur="9.9s" begin="-8.800s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-2" y="-4" width="4" height="4" fill="#89d89b"/><rect x="2" y="-2" width="4" height="4" fill="#6bc399"/><rect x="-4" y="2" width="4" height="4" fill="#4a9a5c"/><rect x="0" y="2" width="4" height="4" fill="#89d89b"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 33;-60 33"
+    dur="10.75s" begin="-9.854s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -4;0 0"
+      dur="10.75s" begin="-9.854s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-846"
+        dur="10.75s" begin="-9.854s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-4" y="-4" width="4" height="4" fill="#e3be66"/><rect x="0" y="-4" width="4" height="4" fill="#d4a84a"/><rect x="-2" y="0" width="4" height="4" fill="#c9913a"/><rect x="-4" y="4" width="4" height="4" fill="#b68933"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 4;-60 4"
+    dur="11.6s" begin="-10.956s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 6;0 0"
+      dur="11.6s" begin="-10.956s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1152"
+        dur="11.6s" begin="-10.956s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-6" width="4" height="4" fill="#a8e8c8"/><rect x="-6" y="-2" width="4" height="4" fill="#6bc399"/><rect x="2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="-2" y="2" width="4" height="4" fill="#4a9a5c"/>
+      </g>
+    </g>
+  </g>
+</g>
+<g opacity="0.94">
+  <animateTransform attributeName="transform" type="translate"
+    values="1060 9;-60 9"
+    dur="6.5s" begin="-6.319s" repeatCount="indefinite" calcMode="linear"/>
+  <g>
+    <animateTransform attributeName="transform" type="translate" additive="sum"
+      values="0 0;0 -7;0 0"
+      dur="6.5s" begin="-6.319s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.42 0 0.58 1;0.42 0 0.58 1"/>
+    <g>
+      <animateTransform attributeName="transform" type="rotate"
+        values="0;-1458"
+        dur="6.5s" begin="-6.319s" repeatCount="indefinite" calcMode="linear"/>
+      <g transform="scale(0.65)">
+        <rect x="-2" y="-2" width="4" height="4" fill="#89d89b"/><rect x="0" y="0" width="4" height="4" fill="#6bc399"/>
+      </g>
+    </g>
+  </g>
+</g>
+</svg>
