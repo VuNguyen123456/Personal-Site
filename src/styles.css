@@ -1074,6 +1074,7 @@ html:is([data-palette="eevee"],
   [data-palette="sylveon"]) .section-diagonal-gap {
   box-sizing: border-box;
   background-color: var(--palette-divider);
+  background-image: none;
   /* Per-species motif — see eeveelution-dividers.css */
 }
 

@@ -38,7 +38,6 @@ import { techAssetUrl } from "./techAssets";
 import { SITE_AUDIO } from "./siteAudioLevels";
 import { isSiteAudioMuted } from "./siteAudioMute";
 import { playDetypingTick, playTextDespawn, playTextSpawn, playTypingTick } from "./typingSound";
-import { useDividerIndex } from "./dividerIndex";
 import { PokeballOpenSpawn, pokeballCryDelayMs } from "./PokeballOpenSpawn";
 import { SpacerPokeballSpawn } from "./SpacerPokeballSpawn";
 import { useDarkMode, useTheme } from "./useDarkMode";
@@ -1710,10 +1709,15 @@ function WashingtonDcClockPanel() {
 /** Full width of page shell (w-full avoids 100vw + scrollbar clip on the right edge) */
 const fullBleed = "relative w-full shrink-0";
 
-export function SectionDiagonalGap({ bottomBorder = false }: { bottomBorder?: boolean }) {
-  const dividerIndex = useDividerIndex();
+export function SectionDiagonalGap({
+  index,
+  bottomBorder = false,
+}: {
+  index: number;
+  bottomBorder?: boolean;
+}) {
   const crawlClass =
-    dividerIndex % 2 === 0 ? "section-diagonal-gap--crawl-rtl" : "section-diagonal-gap--crawl-ltr";
+    index % 2 === 0 ? "section-diagonal-gap--crawl-ltr" : "section-diagonal-gap--crawl-rtl";
 
   return (
     <div
@@ -3323,7 +3327,7 @@ We wanted something that follows the user, not the website. Instead of begging e
         <SectionBottomBorder2 />
       </motion.section>
 
-      <SectionDiagonalGap />
+      <SectionDiagonalGap index={2} />
 
       <section
         id="projects"
@@ -3405,7 +3409,7 @@ We wanted something that follows the user, not the website. Instead of begging e
         <SectionBottomBorder2 />
       </section>
 
-      <SectionDiagonalGap />
+      <SectionDiagonalGap index={3} />
 
       <section
         id="work-experience"
@@ -3455,7 +3459,7 @@ We wanted something that follows the user, not the website. Instead of begging e
         <SectionBottomBorder2 />
       </section>
 
-      <SectionDiagonalGap />
+      <SectionDiagonalGap index={4} />
 
       <section id="tech-stack" className="relative w-full bg-white transition-colors duration-300 ease-in-out dark:bg-black">
         <SectionTopBorder2 />
@@ -3463,7 +3467,7 @@ We wanted something that follows the user, not the website. Instead of begging e
         <SectionBottomBorder2 />
       </section>
 
-      <SectionDiagonalGap />
+      <SectionDiagonalGap index={5} />
 
       <section
         id="credentials"
@@ -3516,7 +3520,7 @@ We wanted something that follows the user, not the website. Instead of begging e
         <SectionBottomBorder2 />
       </section>
 
-      <SectionDiagonalGap />
+      <SectionDiagonalGap index={6} />
 
       <section id="relaxing" className="relative w-full bg-white transition-colors duration-300 ease-in-out dark:bg-black">
         <SectionTopBorder2 />
@@ -3590,7 +3594,7 @@ We wanted something that follows the user, not the website. Instead of begging e
         <SectionBottomBorder2 />
       </section>
 
-      <SectionDiagonalGap />
+      <SectionDiagonalGap index={7} />
 
       <section id="connect" className="relative w-full bg-white transition-colors duration-300 ease-in-out dark:bg-black">
         <SectionTopBorder2 />
@@ -3633,7 +3637,7 @@ We wanted something that follows the user, not the website. Instead of begging e
         <SectionBottomBorder2 />
       </section>
 
-      <SectionDiagonalGap />
+      <SectionDiagonalGap index={8} />
 
       {showAllWebsitesModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setShowAllWebsitesModal(false)}>
@@ -3797,9 +3801,9 @@ We wanted something that follows the user, not the website. Instead of begging e
         <SectionBottomBorder2 />
       </footer>
 
-      <SectionDiagonalGap />
+      <SectionDiagonalGap index={9} />
       <CompactBlankSpacerSection className="bg-white dark:bg-black" />
-      <SectionDiagonalGap />
+      <SectionDiagonalGap index={10} />
       <EmptySpacerSection className="bg-white dark:bg-black" />
     </div>
   );
