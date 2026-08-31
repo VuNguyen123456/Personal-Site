@@ -1,5 +1,5 @@
 /**
- * Jolteon divider — skyline + storm clouds with periodic lightning strikes.
+ * Jolteon divider — skyline + storm clouds.
  * Run: node scripts/build-jolteon-bolt.mjs
  */
 import fs from "fs";
@@ -25,14 +25,11 @@ const C = {
   light: "#7a7882",
   highlight: "#9a98a2",
   window: "#d4c85a",
+  windowGlow: "#fff6b8",
+  windowGlowSoft: "#e8dc78",
   cloud: "#665a78",
   cloudDark: "#50465f",
   cloudLight: "#7f728f",
-  boltGlow: "#4d9fff",
-  bolt: "#9fe0ff",
-  boltCore: "#ffffff",
-  boltShine: "#ffffff",
-  boltFlash: "#c8eeff",
   groundMist: "#8a7f9a",
   groundMistLight: "#9d92ad",
 };
@@ -86,7 +83,6 @@ function buildClouds(tileW) {
     y: 0,
     cells: cloudBandCells(0, cols, 11),
     drift: driftSlow,
-    lightning: true,
     opacity: 0.68,
     colorSeed: 3,
   };
@@ -96,7 +92,6 @@ function buildClouds(tileW) {
     y: 1,
     cells: cloudBandCells(0, cols + 6, 47),
     drift: driftMid,
-    lightning: false,
     opacity: 0.58,
     colorSeed: 29,
   };
@@ -147,6 +142,7 @@ function artDecoTower(bx, spec) {
   } = spec;
 
   const parts = [];
+  const windowPixels = [];
   let row = 0;
 
   for (let r = 0; r < baseH; r++) parts.push(shadedRow(bx, row + r, 0, baseW));
@@ -170,15 +166,16 @@ function artDecoTower(bx, spec) {
   row += spireH;
 
   for (const [shaftR, shaftC] of windows) {
-    parts.push(bpx(bx, shaftStartRow + shaftR, shaftCol + shaftC, C.window));
+    windowPixels.push({
+      x: bx + (shaftCol + shaftC) * BCELL,
+      y: H - (shaftStartRow + shaftR + 1) * BCELL,
+    });
   }
 
-  const peakCol = centerCol(baseW, 1);
   return {
     svg: parts.join(""),
-    strikeX: bx + (peakCol + 0.5) * BCELL,
-    strikeY: H - row * BCELL,
     w: baseW * BCELL,
+    windows: windowPixels,
   };
 }
 
@@ -274,71 +271,6 @@ const SKYLINE_BUILT = SKYLINE.map((slot) => ({
 
 const CLOUDS = buildClouds(TILE_W);
 
-const STRIKE_DUR = 6.5;
-
-/** Pick a cloud pixel above the target — top of cloud, mostly vertical drop. */
-function cloudStrikeOrigin(cells, targetLocalX, targetLocalY, seed = 0, preferLong = true) {
-  const minDrop = 10;
-  const maxDx = preferLong ? 16 : 9;
-
-  const scored = cells
-    .map(([cx, cy]) => {
-      const px = cx * CELL + CELL / 2;
-      const py = cy * CELL + CELL / 2;
-      const dx = Math.abs(px - targetLocalX);
-      const drop = targetLocalY - py;
-      if (drop < minDrop) return null;
-
-      const noise = cloudNoise(cx * 19 + cy * 23 + seed);
-      const reachFit = Math.max(0, 6 - Math.abs(dx - maxDx * 0.55));
-      return {
-        x: px,
-        y: py,
-        score: drop * 3 - cy * 5 - Math.abs(dx - maxDx * 0.55) * 1.6 + reachFit + noise * 2.5,
-      };
-    })
-    .filter(Boolean);
-
-  if (!scored.length) {
-    return { x: targetLocalX, y: Math.max(2, targetLocalY - 14) };
-  }
-
-  scored.sort((a, b) => b.score - a.score);
-  const pick = Math.floor(cloudNoise(seed + 5) * Math.min(3, scored.length));
-  const chosen = scored[pick];
-  return { x: chosen.x, y: chosen.y };
-}
-
-function buildStrikes(cloudIdx) {
-  const begins = [0, 1.6, 3.3, 5.0];
-  return begins.map((begin, i) => ({
-    cloudIdx,
-    buildingIdx: i % SKYLINE_BUILT.length,
-    begin,
-    jitterX: Math.round((cloudNoise(i * 17 + 3) - 0.5) * 12),
-    pathSeed: i * 41 + 7,
-    preferLong: cloudNoise(i * 23 + 1) > 0.25,
-  }));
-}
-
-const STRIKES = buildStrikes(1);
-
-function cloudCenterLocal(cells) {
-  let sx = 0;
-  let sy = 0;
-  for (const [cx, cy] of cells) {
-    sx += cx * CELL + CELL / 2;
-    sy += cy * CELL + CELL / 2;
-  }
-  const n = cells.length;
-  return { x: sx / n, y: sy / n + CELL * 0.8 };
-}
-
-function cloudCenter(cloud) {
-  const local = cloudCenterLocal(cloud.cells);
-  return { x: cloud.x + local.x, y: cloud.y + local.y };
-}
-
 /** Spatial dither — dark pixels scattered by position, not array order. */
 function cloudFill(cx, cy, seed = 0) {
   const n = cloudNoise(cx * 17 + cy * 31 + seed);
@@ -365,46 +297,72 @@ function cloudDriftAnim(cloud, animated) {
     calcMode="linear" keyTimes="0;0.25;0.5;0.75;1"/>`;
 }
 
-function buildingTop(b) {
-  return { x: b.strikeX, y: b.strikeY };
-}
-
-function rectsFromCells(cells, ox, oy, fill) {
-  return cells
-    .map(([cx, cy]) => `<rect x="${ox + cx * CELL}" y="${oy + cy * CELL}" width="${CELL}" height="${CELL}" fill="${fill}"/>`)
-    .join("");
-}
-
-function boltsForCloud(cloud, cloudIdx, animated) {
-  if (cloud.lightning === false || !animated) return "";
-  return STRIKES.filter((s) => s.cloudIdx === cloudIdx).map((strike) => {
-    const building = SKYLINE_BUILT[strike.buildingIdx];
-    if (!building) return "";
-    const toX = building.strikeX - cloud.x + Math.round((cloudNoise(strike.pathSeed + 11) - 0.5) * 9);
-    const toY = building.strikeY - cloud.y;
-    const aimX = toX + (strike.jitterX ?? 0);
-    const localFrom = cloudStrikeOrigin(cloud.cells, aimX, toY, strike.pathSeed, strike.preferLong !== false);
-    const { glow, bolt, core, flash } = boltSegments(localFrom.x, localFrom.y, toX, toY, strike.pathSeed);
-    const t0 = 0.44;
-    const t1 = 0.48;
-    const t2 = 0.7;
-    const t3 = 0.76;
-    return `<g opacity="0">
-      <animate attributeName="opacity"
-        values="0;0;1;1;0.85;0"
-        keyTimes="0;${t0};${t1};${t2};${t3};1"
-        dur="${STRIKE_DUR}s" begin="${strike.begin}s" repeatCount="indefinite"/>
-      <g>${flash}</g>
-      <g>${glow}</g>
-      <g>${bolt}</g>
-      <g>${core}</g>
-    </g>`;
-  }).join("");
-}
-
 function skylineLayer() {
   const ground = `<rect x="0" y="${H - 2}" width="${TILE_W}" height="2" fill="${C.shadow}"/>`;
   return ground + SKYLINE_BUILT.map((b) => `<g>${b.svg}</g>`).join("\n");
+}
+
+/** Per-window flicker — rapid blips, mostly on; glow pulses in sync but stays softer. */
+function windowFlickerAnim(seed, animated, layer) {
+  if (!animated) return "";
+  const begin = (cloudNoise(seed) * 2.8).toFixed(2);
+  const dur = (2.1 + cloudNoise(seed + 3) * 1.4).toFixed(2);
+  const variant = Math.floor(cloudNoise(seed + 5) * 3);
+
+  const patterns = [
+  {
+    keyTimes: "0;0.015;0.03;0.045;0.06;0.075;0.09;0.105;0.12;1",
+    core: "1;0;1;1;0;1;1;1;1;1",
+    glow: "0.55;0.06;0.5;0.55;0.08;0.52;0.55;0.55;0.55;0.55",
+  },
+  {
+    keyTimes: "0;0.7;0.715;0.73;0.745;0.76;0.775;0.79;0.805;1",
+    core: "1;1;1;1;0;1;0;1;1;1",
+    glow: "0.55;0.55;0.55;0.55;0.07;0.52;0.06;0.5;0.55;0.55",
+  },
+  {
+    keyTimes: "0;0.02;0.035;0.05;0.065;0.5;0.515;0.53;0.545;1",
+    core: "1;0;1;1;1;1;0;1;1;1",
+    glow: "0.55;0.06;0.5;0.55;0.55;0.55;0.07;0.5;0.55;0.55",
+  },
+  ];
+
+  const { keyTimes, core, glow } = patterns[variant];
+  const values = layer === "glow" ? glow : core;
+  return `<animate attributeName="opacity" values="${values}" keyTimes="${keyTimes}"
+    dur="${dur}s" begin="${begin}s" repeatCount="indefinite" calcMode="linear"/>`;
+}
+
+function windowLightGroup(win, id, animated) {
+  const { x, y } = win;
+  const seed = id * 41 + x * 5 + y * 11;
+  const core = `<rect x="${x}" y="${y}" width="${BCELL}" height="${BCELL}" fill="${C.window}">
+    ${windowFlickerAnim(seed, animated, "core")}
+  </rect>`;
+
+  const glowOffsets = [
+    [-2, -2], [0, -2], [2, -2],
+    [-2, 0], [2, 0],
+    [-2, 2], [0, 2], [2, 2],
+  ];
+  const glow = glowOffsets
+    .map(([ox, oy], i) => {
+      const fill = i % 2 === 0 ? C.windowGlow : C.windowGlowSoft;
+      return `<rect x="${x + ox}" y="${y + oy}" width="${BCELL}" height="${BCELL}" fill="${fill}" opacity="0.55">
+        ${windowFlickerAnim(seed + i, animated, "glow")}
+      </rect>`;
+    })
+    .join("");
+
+  return `<g>${glow}${core}</g>`;
+}
+
+function windowLightsLayer(animated) {
+  let id = 0;
+  const lights = SKYLINE_BUILT.flatMap((b) =>
+    (b.windows ?? []).map((win) => windowLightGroup(win, id++, animated)),
+  );
+  return lights.length ? `<g>${lights.join("")}</g>` : "";
 }
 
 /** Low ground-hugging mist at the base of the skyline (~1/3 tower height). */
@@ -465,7 +423,6 @@ function groundMistLayer(animated) {
 
 function stormLayer(animated) {
   return CLOUDS.map((cloud, i) => {
-    const bolts = boltsForCloud(cloud, i, animated);
     const baseOpacity = cloud.opacity ?? 0.92;
     return `<g transform="translate(${cloud.x},${cloud.y})">
       ${cloudDriftAnim(cloud, animated)}
@@ -477,151 +434,15 @@ function stormLayer(animated) {
             dur="${(1.0 + (i % 5) * 0.18).toFixed(2)}s" begin="${(i * 0.23).toFixed(2)}s" repeatCount="indefinite"/>
         </g>
       </g>
-      <g>${bolts}</g>
     </g>`;
   }).join("\n");
-}
-
-function lineCells(x0, y0, x1, y1) {
-  const out = [];
-  let x = x0;
-  let y = y0;
-  const dx = Math.abs(x1 - x0);
-  const dy = Math.abs(y1 - y0);
-  const sx = x0 < x1 ? 1 : -1;
-  const sy = y0 < y1 ? 1 : -1;
-  let err = dx - dy;
-  for (;;) {
-    out.push([Math.round(x), Math.round(y)]);
-    if (x === x1 && y === y1) break;
-    const e2 = 2 * err;
-    if (e2 > -dy) {
-      err -= dy;
-      x += sx;
-    }
-    if (e2 < dx) {
-      err += dx;
-      y += sy;
-    }
-  }
-  return out;
-}
-
-const BOLT_GLOW_OFFSETS = [
-  [-3, 0], [3, 0], [0, -3], [0, 3],
-  [-2, 0], [2, 0], [0, -2], [0, 2],
-  [-1, -1], [1, -1], [-1, 1], [1, 1],
-  [-1, 0], [1, 0], [0, -1], [0, 1],
-  [-2, -1], [2, -1], [-2, 1], [2, 1],
-  [-3, -1], [3, -1], [-3, 1], [3, 1],
-  [-1, -2], [1, -2], [-1, 2], [1, 2],
-];
-
-function jaggedBoltWaypoints(x0, y0, x1, y1, seed) {
-  let fromY = Math.round(y0);
-  let toY = Math.round(y1);
-  const fromX = Math.round(x0);
-  const toX = Math.round(x1);
-
-  if (toY <= fromY) {
-    fromY = Math.max(2, toY - 12);
-  }
-
-  const drop = toY - fromY;
-  const segments = Math.max(3, Math.min(5, Math.floor(drop / 5)));
-  const maxJag = Math.min(5, Math.max(2, drop * 0.12));
-  const waypoints = [{ x: fromX, y: fromY }];
-
-  for (let i = 1; i < segments; i++) {
-    const t = i / segments;
-    const y = Math.round(fromY + drop * t);
-    const baseX = fromX + (toX - fromX) * t;
-    const jag = (cloudNoise(seed + i * 17) - 0.5) * 2 * maxJag;
-    waypoints.push({
-      x: Math.round(baseX + jag),
-      y,
-    });
-  }
-
-  waypoints.push({ x: toX, y: toY });
-  return waypoints;
-}
-
-function boltPathCells(x0, y0, x1, y1, seed) {
-  const waypoints = jaggedBoltWaypoints(x0, y0, x1, y1, seed);
-  const seen = new Set();
-  const corePts = [];
-
-  for (let i = 0; i < waypoints.length - 1; i++) {
-    const seg = lineCells(waypoints[i].x, waypoints[i].y, waypoints[i + 1].x, waypoints[i + 1].y);
-    for (const [x, y] of seg) {
-      const key = `${x},${y}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      corePts.push([x, y]);
-    }
-  }
-
-  // Rare tiny downward branch.
-  if (corePts.length > 18 && cloudNoise(seed + 99) > 0.62) {
-    const branchAt = Math.floor(corePts.length * (0.4 + cloudNoise(seed + 101) * 0.2));
-    const [bx, by] = corePts[branchAt];
-    const dir = cloudNoise(seed + 103) > 0.5 ? 1 : -1;
-    const branchLen = 2 + Math.floor(cloudNoise(seed + 107) * 3);
-    const branch = lineCells(bx, by, bx + dir * 2, by + branchLen);
-    for (const [x, y] of branch) {
-      const key = `${x},${y}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      corePts.push([x, y]);
-    }
-  }
-
-  return { corePts, seen };
-}
-
-function boltSegments(x0, y0, x1, y1, seed = 0) {
-  const { corePts, seen } = boltPathCells(x0, y0, x1, y1, seed);
-
-  const glowKeys = new Set();
-  for (const [x, y] of corePts) {
-    for (const [ox, oy] of BOLT_GLOW_OFFSETS) {
-      glowKeys.add(`${x + ox},${y + oy}`);
-    }
-  }
-
-  const flash = [
-    `<rect x="${Math.round(x0) - 10}" y="${Math.round(y0) - 8}" width="20" height="14" fill="${C.boltFlash}" opacity="0.55"/>`,
-    `<rect x="${Math.round(x1) - 8}" y="${Math.round(y1) - 6}" width="16" height="10" fill="${C.boltFlash}" opacity="0.45"/>`,
-  ].join("");
-
-  const glow = [...glowKeys]
-    .filter((k) => !seen.has(k))
-    .map((k) => {
-      const [x, y] = k.split(",").map(Number);
-      return `<rect x="${x}" y="${y}" width="1" height="1" fill="${C.boltGlow}" opacity="0.75"/>`;
-    })
-    .join("");
-
-  const bolt = corePts
-    .map(([x, y]) => `<rect x="${x}" y="${y}" width="2" height="2" fill="${C.bolt}"/>`)
-    .join("");
-
-  const core = corePts
-    .map(([x, y]) => `<rect x="${x}" y="${y}" width="1" height="1" fill="${C.boltCore}"/><rect x="${x + 1}" y="${y + 1}" width="1" height="1" fill="${C.boltShine}"/>`)
-    .join("");
-
-  return { glow, bolt, core, flash };
-}
-
-function lightningLayer() {
-  return "";
 }
 
 function buildSvg({ animated }) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${TILE_W}" height="${H}" viewBox="0 0 ${TILE_W} ${H}" preserveAspectRatio="xMidYMid slice" overflow="visible" shape-rendering="crispEdges">
 ${skylineLayer()}
+${windowLightsLayer(animated)}
 ${groundMistLayer(animated)}
 ${stormLayer(animated)}
 </svg>`;
@@ -639,7 +460,7 @@ function patchCss(ltrUrl, rtlUrl, staticUrl) {
     throw new Error("Could not find Jolteon/Flareon markers in eeveelution-dividers.css");
   }
 
-  const replacement = `/* Jolteon — storm clouds over skyline with lightning strikes */
+  const replacement = `/* Jolteon — storm clouds over skyline */
 html[data-palette="jolteon"] .section-diagonal-gap--crawl-ltr,
 html[data-palette="jolteon"] .section-diagonal-gap--crawl-rtl {
   image-rendering: pixelated;
