@@ -346,6 +346,23 @@ type WorkExperienceEntry = {
 
 const workExperienceEntries: WorkExperienceEntry[] = [
   {
+    id: "sap-revenue-accounting-ai",
+    role: "Revenue Accounting AI Engineer",
+    company: "SAP iXP",
+    location: "Newtown Square, Pennsylvania",
+    dates: "Aug 2026 – Present",
+    summary:
+      "Global enterprise software company delivering ERP and AI solutions, including SAP S/4HANA and the Joule generative AI assistant.",
+    highlights: [
+      "Built 4 layered ABAP Core Data Services (CDS) views on SAP S/4HANA, serving 114 closing entries to an SAP Joule AI capability through an OData API with DCL company-code access rules.",
+      "Designed an OData API and refactored Joule’s filtering logic, replacing ~1,173 lines of hardcoded YAML with live region and company-code fetches, validated with 20 Gherkin end-to-end scenarios.",
+      "Fixed 2 SAP Fiori (SAPUI5) apps, including a routing bug that sent every environment to production and an Excel export HTTP 400 error, deployed via CI/CD across dev, test, and prod.",
+      "Analyzed the Joule MCP connector architecture for 4 Revenue Accounting Report AI capabilities and authored a technical report with a 7-step plan for a Python-based MCP server.",
+      "Authored ground-truth samples for a 50+ sample golden benchmark evaluating SAP’s NOVA AI coding assistant on ABAP code generation and Revenue Accounting, benchmarked against Claude Code.",
+      "Delivered ~8 story points per sprint in 2-week Agile Scrum cycles using Jira, estimating features with business stakeholders using Fibonacci story points.",
+    ],
+  },
+  {
     id: "cci-research-assistant",
     role: "Research Assistant",
     company: "Commonwealth Cyber Initiative",
